@@ -7,7 +7,7 @@
   <style>
     :root{--brand:#004085;--bg:#f5f6f8;--card:#fff;--line:#e3e6ea;--muted:#6b7280;}
     *{box-sizing:border-box} body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);margin:0;padding:20px}
-    .container{max-width:1200px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+    .container{max-width:1300px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
     .header{background:var(--brand);color:#fff;padding:22px;text-align:center}
     .nav-tabs{display:flex;border-bottom:1px solid var(--line)}
     .nav-tab{flex:1;padding:12px 16px;background:#f8f9fa;border:none;cursor:pointer}
@@ -31,6 +31,9 @@
     /* Highlight edited row */
     .row-highlight{animation:hilite 2.2s ease-in-out 1; background:#fff9c4 !important}
     @keyframes hilite{0%{background:#fff9c4} 100%{background:transparent}}
+    /* Panel inicio */
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .section{border:1px solid var(--line);border-radius:8px;padding:12px;background:#fff}
     /* Sidebar Seguimiento */
     #sidebarSeguimiento{position:fixed;top:0;right:-460px;width:460px;height:100%;background:#fff;box-shadow:-2px 0 14px rgba(0,0,0,.15);transition:right .28s;z-index:1200;display:flex;flex-direction:column}
     #sidebarSeguimiento.active{right:0}
@@ -44,11 +47,11 @@
     .modal.open{display:flex}.modal-card{width:min(920px,96vw);max-height:88vh;background:#fff;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
     .modal-head{background:var(--brand);color:#fff;padding:14px;display:flex;justify-content:space-between}
     .modal-body{padding:18px;overflow:auto}
-    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.section{border:1px solid var(--line);border-radius:8px;padding:12px}
     .print-actions{padding:12px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line)}
     /* Filtros */
     .filters{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
     .filters input,.filters select{padding:8px;border-radius:6px;border:1px solid var(--line)}
+    a.link{color:#0d6efd;text-decoration:none} a.link:hover{text-decoration:underline}
   </style>
 </head>
 <body>
@@ -60,24 +63,31 @@
       <button class="nav-tab" onclick="showTab('casos',event)">Casos Registrados</button>
     </div>
 
-    <!-- Inicio -->
+    <!-- Panel de Inicio -->
     <div id="inicio" class="tab-content active">
       <h2>Panel de Inicio</h2>
       <p style="color:#555;font-size:.95rem;background:#fff3cd;padding:10px;border-radius:8px">
         ℹ️ <b>Ayuda:</b> Use las pestañas superiores para registrar nuevos casos, ver el listado o gestionar seguimientos.
       </p>
       <div class="grid-2">
-        <div class="section"><h4>Totales</h4>
+        <div class="section" id="inicioLeft">
+          <h4>Totales</h4>
           <p>Total: <strong id="totalCasos">0</strong></p>
           <p class="status-abierto">Abiertos: <strong id="casosAbiertos">0</strong></p>
           <p class="status-en">En Proceso: <strong id="casosProceso">0</strong></p>
           <p class="status-cerrado">Cerrados: <strong id="casosCerrados">0</strong></p>
+          <div style="margin-top:8px">
+            <button class="btn btn-primary" onclick="imprimirSeccion('inicio')">Imprimir Panel</button>
+          </div>
+        </div>
+        <div class="section" id="inicioRight">
+          <h4>Casos en trámite</h4>
+          <ul id="listaTramite" style="max-height:300px;overflow:auto;margin:0;padding-left:16px"></ul>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="imprimirSeccion('inicio')">Imprimir Panel</button>
     </div>
 
-    <!-- Registro -->
+    <!-- Nuevo Caso -->
     <div id="registro" class="tab-content">
       <h2 id="formTitle">Nuevo Caso</h2>
       <form id="casoForm">
@@ -87,28 +97,46 @@
         </div>
         <div class="form-row">
           <div><label>Fecha nac.</label><input type="date" id="fechaNacimientoNNA"></div>
-          <div><label>Género</label><select id="generoNNA"><option></option><option>Masculino</option><option>Femenino</option></select></div>
+          <div><label>Género</label>
+            <select id="generoNNA"><option></option><option>Masculino</option><option>Femenino</option><option>Otro</option></select>
+          </div>
         </div>
         <div class="form-row full"><label>Situación</label><textarea id="situacionVulneracion"></textarea></div>
-        <div class="form-row full"><label>Seguimiento inicial</label><textarea id="seguimientoInicial"></textarea></div>
-        <div class="form-row"><label>Estado</label><select id="estadoCaso"><option>Abierto</option><option>En Proceso</option><option>Cerrado</option></select></div>
-        <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
-          <button type="submit" class="btn btn-primary">Guardar</button>
-          <button type="button" class="btn btn-secondary" onclick="imprimirSeccion('registro')">Imprimir</button>
+
+        <div class="form-row full">
+          <label>Expediente de referencia</label>
+          <select id="expedienteReferencia"><option value="">-- Seleccione --</option></select>
+          <small id="expedienteInfo" style="color:#666"></small>
+        </div>
+
+        <div class="form-row full"><label>Seguimiento inicial</label><textarea id="seguimientoInicial" placeholder="Anote el primer seguimiento o acción..."></textarea></div>
+
+        <div class="form-row">
+          <div><label>Estado</label>
+            <select id="estadoCaso"><option>Abierto</option><option>En Proceso</option><option>Cerrado</option></select>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:8px">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-secondary" onclick="imprimirSeccion('registro')">Imprimir</button>
+          </div>
         </div>
       </form>
     </div>
 
     <!-- Casos -->
     <div id="casos" class="tab-content">
-      <h2>Casos Registrados</h2>
+      <div style="display:flex;align-items:center;gap:10px;justify-content:space-between">
+        <h2>Casos Registrados</h2>
+        <div>
+          <button class="btn btn-primary" onclick="imprimirSeccion('casos')">Imprimir listado</button>
+        </div>
+      </div>
       <div class="filters">
         <input id="searchInput" placeholder="Buscar nombre/DNI" oninput="aplicarFiltros()">
         <select id="estadoFilter" onchange="aplicarFiltros()">
           <option value="">Todos</option><option>Abierto</option><option>En Proceso</option><option>Cerrado</option>
         </select>
       </div>
-      <button class="btn btn-primary" onclick="imprimirSeccion('casos')">Imprimir listado</button>
       <div id="tablaCasos"></div>
     </div>
   </div>
@@ -128,9 +156,9 @@
     </div>
   </aside>
 
-  <!-- Modal Caso -->
+  <!-- Modal Caso (resumen completo del caso) -->
   <div id="modalCaso" class="modal"><div class="modal-card">
-    <div class="modal-head"><h3>Detalle</h3>
+    <div class="modal-head"><h3>Detalle del Caso</h3>
       <div>
         <button class="btn btn-secondary" onclick="imprimirSeccion('modalCasoBody')">Imprimir</button>
         <button class="btn btn-danger" onclick="cerrarModalCaso()">✕</button>
@@ -141,29 +169,48 @@
     </div>
   </div></div>
 
+  <!-- Modal Expediente (causas) -->
+  <div id="modalExpediente" class="modal"><div class="modal-card">
+    <div class="modal-head"><h3>Detalle de Expediente</h3>
+      <div>
+        <button class="btn btn-secondary" onclick="imprimirSeccion('modalExpedienteBody')">Imprimir</button>
+        <button class="btn btn-danger" onclick="cerrarModalExpediente()">✕</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modalExpedienteBody"></div>
+  </div></div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // 🔧 Helpers DOM
+    // Helper DOM
     const $ = (id)=>document.getElementById(id);
 
-    // 🔥 Firebase
-    const app = initializeApp({
+    // Firebase App 1: proteccion-personas (casos)
+    const app1 = initializeApp({
       apiKey:"AIzaSyAWlsFqN09y_DAAIKLLIjGjjyR2_rKJIFs",
       authDomain:"proteccion-personas.firebaseapp.com",
       projectId:"proteccion-personas"
-    });
-    const db = getFirestore(app);
+    }, "app1");
+    const db1 = getFirestore(app1);
 
-    // 🔧 Estado App
-    let casos = [];
-    let casosFiltrados = [];
-    let casoActual = null;
-    let editandoId = null;
-    let lastEditedId = null; // para resaltar fila luego de editar
+    // Firebase App 2: causas-defensoria (causas)
+    const app2 = initializeApp({
+      apiKey:"AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
+      authDomain:"causas-defensoria.firebaseapp.com",
+      projectId:"causas-defensoria",
+      storageBucket:"causas-defensoria.firebasestorage.app",
+      messagingSenderId:"186064671470",
+      appId:"1:186064671470:web:b58bae5eadbe6e469f19ff"
+    }, "app2");
+    const db2 = getFirestore(app2);
 
-    // 🔗 Referencias DOM
+    // Estado
+    let casos=[], casosFiltrados=[], casoActual=null, editandoId=null, lastEditedId=null;
+    let causasIndex = {}; // id -> data (numero, caratula, ...)
+
+    // Refs formulario/DOM
     const form = $('casoForm');
     const formTitle = $('formTitle');
     const nombreNNA = $('nombreNNA');
@@ -173,6 +220,8 @@
     const situacionVulneracion = $('situacionVulneracion');
     const seguimientoInicial = $('seguimientoInicial');
     const estadoCaso = $('estadoCaso');
+    const expedienteSelect = $('expedienteReferencia');
+    const expedienteInfo = $('expedienteInfo');
 
     const searchInput = $('searchInput');
     const estadoFilter = $('estadoFilter');
@@ -182,6 +231,7 @@
     const casosAbiertos = $('casosAbiertos');
     const casosProceso = $('casosProceso');
     const casosCerrados = $('casosCerrados');
+    const listaTramite = $('listaTramite');
 
     const sidebarSeguimiento = $('sidebarSeguimiento');
     const sidebarTitle = $('sidebarTitle');
@@ -191,57 +241,34 @@
     const modalCaso = $('modalCaso');
     const modalCasoBody = $('modalCasoBody');
 
-    // ⏯️ Eventos
-    document.addEventListener("DOMContentLoaded", cargarCasos);
+    // Eventos
+    document.addEventListener("DOMContentLoaded", async ()=>{
+      await Promise.all([cargarExpedientes(), cargarCasos()]);
+    });
     form.addEventListener("submit", guardarCaso);
+    expedienteSelect.addEventListener("change", ()=>{
+      const id = expedienteSelect.value;
+      if(!id){expedienteInfo.textContent=""; return;}
+      const c = causasIndex[id];
+      expedienteInfo.textContent = c ? `Seleccionado: ${c.numero || id} — ${c.caratula || ''}` : "";
+    });
 
-    async function cargarCasos(){
-      casos = [];
-      const s = await getDocs(collection(db,"casos"));
-      s.forEach(d=>casos.push({id:d.id, ...d.data()}));
-      aplicarFiltros();
-      actualizarDashboard();
+    // Cargar expedientes (causas) y armar índice
+    async function cargarExpedientes(){
+      expedienteSelect.innerHTML = "<option value=''>-- Seleccione --</option>";
+      causasIndex = {};
+      const snap = await getDocs(collection(db2,"causas"));
+      snap.forEach(d=>{
+        const data = d.data();
+        causasIndex[d.id] = data;
+        const opt = document.createElement("option");
+        opt.value = d.id;
+        opt.textContent = (data.numero || d.id) + (data.caratula ? (" · " + data.caratula) : "");
+        expedienteSelect.appendChild(opt);
+      });
     }
 
-    function aplicarFiltros(){
-      const q = (searchInput.value||"").toLowerCase();
-      const est = estadoFilter.value||"";
-      casosFiltrados = casos
-        .filter(c => (c.nombreNNA||"").toLowerCase().includes(q) || (c.dniNNA||"").includes(q))
-        .filter(c => !est || c.estadoCaso===est);
-      mostrarCasos();
-    }
-
-    function mostrarCasos(){
-      if(!casosFiltrados.length){ tablaCasos.innerHTML = "<p>Sin casos</p>"; return; }
-      let h = "<table class='cases-table'><tr><th></th><th>Nombre</th><th>Estado</th><th>Acciones</th></tr>";
-      for(const c of casosFiltrados){
-        const cls = c.estadoCaso==="Abierto" ? "status-abierto" : (c.estadoCaso==="Cerrado" ? "status-cerrado" : "status-en");
-        h += `<tr id="row-${c.id}">
-                <td><input type="checkbox" onchange="toggleSidebar('${c.id}',this.checked)"></td>
-                <td>${c.nombreNNA||""}</td>
-                <td class="${cls}">${c.estadoCaso||""}</td>
-                <td class="actions">
-                  <button class="btn btn-ghost" onclick="editarCaso('${c.id}')">Editar</button>
-                  <button class="btn btn-ghost" onclick="verCaso('${c.id}')">Ver</button>
-                  <button class="btn btn-danger" onclick="eliminarCaso('${c.id}')">Eliminar</button>
-                </td>
-              </tr>`;
-      }
-      h += "</table>";
-      tablaCasos.innerHTML = h;
-
-      // Resaltar fila editada
-      if(lastEditedId){
-        const row = $('row-'+lastEditedId);
-        if(row){
-          row.classList.add('row-highlight');
-          row.scrollIntoView({behavior:'smooth', block:'center'});
-        }
-        lastEditedId = null;
-      }
-    }
-
+    // Guardar/Actualizar caso
     async function guardarCaso(e){
       e.preventDefault();
       const data = {
@@ -250,10 +277,12 @@
         fechaNacimientoNNA: fechaNacimientoNNA.value,
         generoNNA: generoNNA.value,
         situacionVulneracion: situacionVulneracion.value,
-        estadoCaso: estadoCaso.value
+        estadoCaso: estadoCaso.value,
+        expedienteReferencia: expedienteSelect.value || ""
       };
+
       if(editandoId){
-        const ref = doc(db,"casos",editandoId);
+        const ref = doc(db1,"casos",editandoId);
         const snap = await getDoc(ref);
         let historial = (snap.exists() && snap.data().historial) ? snap.data().historial : [];
         historial.push({fecha:new Date().toLocaleString(), accion:"Edición del caso"});
@@ -262,7 +291,7 @@
         editandoId = null;
         formTitle.textContent = "Nuevo Caso";
       }else{
-        await addDoc(collection(db,"casos"),{
+        await addDoc(collection(db1,"casos"),{
           ...data,
           fechaRegistro: new Date().toISOString().split("T")[0],
           seguimientos: seguimientoInicial.value ? [{fecha:new Date().toLocaleString(), texto: seguimientoInicial.value}] : [],
@@ -270,11 +299,85 @@
         });
       }
       form.reset();
+      expedienteInfo.textContent = "";
       await cargarCasos();
       showTab('casos');
     }
 
-    // 🖊️ Editar (expuesta a window)
+    // Cargar casos
+    async function cargarCasos(){
+      casos = [];
+      const s = await getDocs(collection(db1,"casos"));
+      s.forEach(d=>casos.push({id:d.id, ...d.data()}));
+      aplicarFiltros();
+      actualizarDashboard();
+      renderTramite();
+    }
+
+    function aplicarFiltros(){
+      const q = (searchInput?.value||"").toLowerCase();
+      const est = (estadoFilter?.value||"");
+      casosFiltrados = casos
+        .filter(c => (c.nombreNNA||"").toLowerCase().includes(q) || (c.dniNNA||"").includes(q))
+        .filter(c => !est || c.estadoCaso===est);
+      mostrarCasos();
+    }
+
+    function getExpDisplay(id){
+      if(!id) return "";
+      const c = causasIndex[id];
+      return c ? (c.numero || id) : id;
+    }
+
+    function mostrarCasos(){
+      if(!casosFiltrados.length){ tablaCasos.innerHTML="<p>Sin casos</p>"; return; }
+      let h = "<table class='cases-table'><tr><th></th><th>Nombre</th><th>Estado</th><th>Expediente</th><th>Acciones</th></tr>";
+      for(const c of casosFiltrados){
+        const cls = c.estadoCaso==="Abierto" ? "status-abierto" : (c.estadoCaso==="Cerrado" ? "status-cerrado" : "status-en");
+        const expTxt = c.expedienteReferencia ? getExpDisplay(c.expedienteReferencia) : "";
+        const expHtml = c.expedienteReferencia
+          ? `<a class="link" href="#" onclick="verExpediente('${c.expedienteReferencia}')">${expTxt}</a>`
+          : "";
+        h += `<tr id="row-${c.id}">
+                <td><input type="checkbox" onchange="toggleSidebar('${c.id}',this.checked)"></td>
+                <td>${c.nombreNNA||""}</td>
+                <td class="${cls}">${c.estadoCaso||""}</td>
+                <td>${expHtml}</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" onclick="editarCaso('${c.id}')">Editar</button>
+                  <button class="btn btn-ghost" onclick="verCaso('${c.id}')">Vista</button>
+                  <button class="btn btn-danger" onclick="eliminarCaso('${c.id}')">Eliminar</button>
+                </td>
+              </tr>`;
+      }
+      h += "</table>";
+      tablaCasos.innerHTML = h;
+
+      if(lastEditedId){
+        const row = $('row-'+lastEditedId);
+        if(row){ row.classList.add('row-highlight'); row.scrollIntoView({behavior:'smooth', block:'center'}); }
+        lastEditedId = null;
+      }
+    }
+
+    function actualizarDashboard(){
+      totalCasos.textContent = casos.length;
+      casosAbiertos.textContent = casos.filter(c=>c.estadoCaso==="Abierto").length;
+      casosProceso.textContent = casos.filter(c=>c.estadoCaso==="En Proceso").length;
+      casosCerrados.textContent = casos.filter(c=>c.estadoCaso==="Cerrado").length;
+    }
+
+    function renderTramite(){
+      listaTramite.innerHTML="";
+      casos.filter(c=>c.estadoCaso==="En Proceso").forEach(c=>{
+        const li=document.createElement("li");
+        const expTxt = c.expedienteReferencia ? getExpDisplay(c.expedienteReferencia) : "-";
+        li.innerHTML = `<b>${c.nombreNNA||"Sin nombre"}</b> · Exp: ${expTxt}`;
+        listaTramite.appendChild(li);
+      });
+    }
+
+    // Editar
     window.editarCaso = (id)=>{
       const c = casos.find(x=>x.id===id);
       if(!c) return;
@@ -286,45 +389,40 @@
       generoNNA.value = c.generoNNA || "";
       situacionVulneracion.value = c.situacionVulneracion || "";
       estadoCaso.value = c.estadoCaso || "Abierto";
+      expedienteSelect.value = c.expedienteReferencia || "";
+      expedienteInfo.textContent = c.expedienteReferencia ? `Seleccionado: ${getExpDisplay(c.expedienteReferencia)}` : "";
       showTab('registro');
     };
 
-    function actualizarDashboard(){
-      totalCasos.textContent = casos.length;
-      casosAbiertos.textContent = casos.filter(c=>c.estadoCaso==="Abierto").length;
-      casosProceso.textContent = casos.filter(c=>c.estadoCaso==="En Proceso").length;
-      casosCerrados.textContent = casos.filter(c=>c.estadoCaso==="Cerrado").length;
-    }
-
-    // 📎 Sidebar seguimiento
+    // Sidebar Seguimiento
     window.toggleSidebar = async (id, ch)=>{
       if(ch){
-        const s = await getDoc(doc(db,"casos",id));
+        const s = await getDoc(doc(db1,"casos",id));
         if(s.exists()){
           casoActual = {id, ...s.data()};
           sidebarTitle.textContent = "Seguimiento · " + (casoActual.nombreNNA||"");
           renderTimeline();
           sidebarSeguimiento.classList.add("active");
         }
-      }else{
-        cerrarSidebar();
-      }
+      }else cerrarSidebar();
     };
 
     function renderTimeline(){
-      timeline.innerHTML = (casoActual.seguimientos||[])
-        .map((s,i)=>`<div class='timeline-item'>
-                        <div class='date'>${s.fecha}</div>
-                        <div>${s.texto}</div>
-                        <button class='delete-btn' onclick='eliminarSeguimiento(${i})'>✕</button>
-                      </div>`).join("") || "<p>Sin seguimientos</p>";
+      const arr = Array.isArray(casoActual?.seguimientos) ? casoActual.seguimientos : [];
+      timeline.innerHTML = arr.length
+        ? arr.map((s,i)=>`<div class='timeline-item'>
+              <div class='date'>${s.fecha}</div>
+              <div>${s.texto}</div>
+              <button class='delete-btn' title='Eliminar' onclick='eliminarSeguimiento(${i})'>✕</button>
+            </div>`).join("")
+        : "<p>Sin seguimientos</p>";
     }
 
     window.guardarSeguimiento = async ()=>{
       if(!casoActual || !nuevoSeguimiento.value) return;
       const arr = Array.isArray(casoActual.seguimientos) ? casoActual.seguimientos : [];
       arr.push({fecha:new Date().toLocaleString(), texto:nuevoSeguimiento.value});
-      await updateDoc(doc(db,"casos",casoActual.id), {seguimientos:arr});
+      await updateDoc(doc(db1,"casos",casoActual.id), {seguimientos:arr});
       casoActual.seguimientos = arr;
       nuevoSeguimiento.value = "";
       renderTimeline();
@@ -334,7 +432,7 @@
       if(!casoActual) return;
       const arr = Array.isArray(casoActual.seguimientos) ? casoActual.seguimientos : [];
       arr.splice(i,1);
-      await updateDoc(doc(db,"casos",casoActual.id), {seguimientos:arr});
+      await updateDoc(doc(db1,"casos",casoActual.id), {seguimientos:arr});
       casoActual.seguimientos = arr;
       renderTimeline();
     };
@@ -344,9 +442,9 @@
       document.querySelectorAll("#tablaCasos input[type=checkbox]").forEach(c=>c.checked=false);
     };
 
-    // 🪟 Modal caso
+    // Vista (modal) del Caso con datos + seguimientos + historial
     window.verCaso = async (id)=>{
-      const s = await getDoc(doc(db,"casos",id));
+      const s = await getDoc(doc(db1,"casos",id));
       if(!s.exists()) return;
       casoActual = {id, ...s.data()};
       const historialHTML = (casoActual.historial||[])
@@ -354,20 +452,29 @@
       const seguimientosHTML = (casoActual.seguimientos||[])
         .map(sg=>`<p><span class='status-en'>${sg.fecha}</span>: ${sg.texto}</p>`).join("") || "<p>Sin seguimiento</p>";
 
+      const expHtml = casoActual.expedienteReferencia
+        ? `<a class="link" href="#" onclick="verExpediente('${casoActual.expedienteReferencia}')">${getExpDisplay(casoActual.expedienteReferencia)}</a>`
+        : "-";
+
       modalCasoBody.innerHTML = `
-        <div class='grid-2'>
-          <div class='section'>
-            <h4>Datos</h4>
-            <p><b>Nombre:</b> ${casoActual.nombreNNA||""}</p>
-            <p><b>DNI:</b> ${casoActual.dniNNA||""}</p>
-            <p><b>Fecha Nac.:</b> ${casoActual.fechaNacimientoNNA||""}</p>
-            <p><b>Género:</b> ${casoActual.generoNNA||""}</p>
-            <p><b>Estado:</b> ${casoActual.estadoCaso||""}</p>
+        <div class='section'>
+          <h4>Datos del NNA</h4>
+          <div class="form-row">
+            <div><b>Nombre:</b> ${casoActual.nombreNNA||""}</div>
+            <div><b>DNI:</b> ${casoActual.dniNNA||""}</div>
           </div>
-          <div class='section'>
-            <h4>Situación</h4>
-            <p>${(casoActual.situacionVulneracion||"").replace(/\n/g,"<br>")}</p>
+          <div class="form-row">
+            <div><b>Fecha Nac.:</b> ${casoActual.fechaNacimientoNNA||""}</div>
+            <div><b>Género:</b> ${casoActual.generoNNA||""}</div>
           </div>
+          <div class="form-row">
+            <div><b>Estado:</b> ${casoActual.estadoCaso||""}</div>
+            <div><b>Exp. ref.:</b> ${expHtml}</div>
+          </div>
+        </div>
+        <div class='section'>
+          <h4>Situación</h4>
+          <p>${(casoActual.situacionVulneracion||"").replace(/\n/g,"<br>")}</p>
         </div>
         <div class='section'>
           <h4>Seguimientos</h4>
@@ -385,14 +492,40 @@
     window.eliminarCaso = async (id)=>{
       const targetId = id || (casoActual && casoActual.id);
       if(!targetId) return;
-      if(confirm("Eliminar caso?")){
-        await deleteDoc(doc(db,"casos",targetId));
+      if(confirm("¿Eliminar caso?")){
+        await deleteDoc(doc(db1,"casos",targetId));
         modalCaso.classList.remove("open");
         await cargarCasos();
       }
     };
 
-    // 🖨️ Impresión
+    // Modal Expediente (causas) con seguimientos
+    window.verExpediente = async (id)=>{
+      const d=await getDoc(doc(db2,"causas",id));
+      if(!d.exists()) return;
+      const data=d.data();
+      const segs = (data.seguimientos||[])
+        .map(s=>`<p><span style="color:#004085;font-weight:bold">${s.fecha}:</span> ${s.texto}</p>`)
+        .join("") || "<p style='color:gray'>Sin seguimientos registrados</p>";
+
+      $('modalExpedienteBody').innerHTML = `
+        <div class='section'>
+          <p><b>Número:</b> ${data.numero||id}</p>
+          <p><b>Carátula:</b> ${data.caratula||""}</p>
+          <p><b>Fecha:</b> ${data.fecha||""}</p>
+          <p><b>Estado:</b> ${data.estado||""}</p>
+          <p><b>Detalle:</b><br>${(data.detalle||"").replace(/\n/g,"<br>")}</p>
+        </div>
+        <div class='section'>
+          <h4>Seguimientos</h4>
+          ${segs}
+        </div>`;
+      $('modalExpediente').classList.add("open");
+    };
+
+    window.cerrarModalExpediente = ()=>$('modalExpediente').classList.remove("open");
+
+    // Impresión genérica
     window.imprimirSeccion = (id)=>{
       const el = document.getElementById(id);
       if(!el) return;
@@ -403,7 +536,7 @@
       w.print();
     };
 
-    // 🧭 Tabs (expuesta a window)
+    // Tabs
     window.showTab = (id, e)=>{
       document.querySelectorAll(".tab-content").forEach(x=>x.classList.remove("active"));
       document.querySelectorAll(".nav-tab").forEach(x=>x.classList.remove("active"));
