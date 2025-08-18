@@ -1,603 +1,416 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Protección de Personas - Defensoría Oficial Misiones</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); overflow: hidden; }
-        .header { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 30px; text-align: center; }
-        .header h1 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 300; }
-        .header p { font-size: 1.1rem; opacity: 0.9; }
-        .nav-tabs { display: flex; background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
-        .nav-tab { flex: 1; padding: 15px 20px; background: none; border: none; cursor: pointer; font-size: 1rem; font-weight: 500; color: #6c757d; transition: all 0.3s ease; border-bottom: 3px solid transparent; }
-        .nav-tab:hover { background: #e9ecef; color: #495057; }
-        .nav-tab.active { color: #007bff; border-bottom-color: #007bff; background: white; }
-        .tab-content { display: none; padding: 30px; }
-        .tab-content.active { display: block; }
-        .form-group { margin-bottom: 20px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-row.full { grid-template-columns: 1fr; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50; }
-        input, select, textarea { width: 100%; padding: 12px 15px; border: 2px solid #e9ecef; border-radius: 8px; font-size: 1rem; transition: all 0.3s ease; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #007bff; box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1); }
-        textarea { resize: vertical; min-height: 120px; }
-        .btn { padding: 12px 30px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-primary { background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3); }
-        .btn-secondary { background: #6c757d; color: white; }
-        .btn-secondary:hover { background: #5a6268; transform: translateY(-2px); }
-        .btn-danger { background: #dc3545; color: white; }
-        .btn-danger:hover { background: #c82333; transform: translateY(-2px); }
-        .search-container { margin-bottom: 30px; display: flex; gap: 15px; align-items: end; }
-        .search-container .form-group { flex: 1; margin-bottom: 0; }
-        .cases-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
-        .cases-table th { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 15px; text-align: left; font-weight: 600; }
-        .cases-table td { padding: 15px; border-bottom: 1px solid #e9ecef; }
-        .cases-table tr:hover { background: #f8f9fa; }
-        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; }
-        .status-abierto { background: #d4edda; color: #155724; }
-        .status-proceso { background: #fff3cd; color: #856404; }
-        .status-cerrado { background: #f8d7da; color: #721c24; }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); }
-        .modal-content { background: white; margin: 5% auto; padding: 0; border-radius: 15px; width: 90%; max-width: 800px; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); }
-        .modal-header { background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 20px 30px; border-radius: 15px 15px 0 0; }
-        .modal-body { padding: 30px; }
-        .close { color: white; float: right; font-size: 28px; font-weight: bold; cursor: pointer; opacity: 0.8; }
-        .close:hover { opacity: 1; }
-        .seguimiento-item { background: #f8f9fa; border-left: 4px solid #007bff; padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; }
-        .seguimiento-fecha { font-weight: 600; color: #007bff; margin-bottom: 5px; }
-        .alert { padding: 15px; margin-bottom: 20px; border-radius: 8px; font-weight: 500; }
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); text-align: center; border-left: 5px solid #007bff; }
-        .stat-number { font-size: 2.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 5px; }
-        .stat-label { color: #6c757d; font-weight: 500; }
-        @media (max-width: 768px) {
-            .form-row { grid-template-columns: 1fr; }
-            .search-container { flex-direction: column; }
-            .nav-tabs { flex-direction: column; }
-            .cases-table { font-size: 0.9rem; }
-            .modal-content { width: 95%; margin: 10% auto; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sistema de Protección de Personas</title>
+  <style>
+    :root{--brand:#004085;--bg:#f5f6f8;--card:#fff;--line:#e3e6ea;--muted:#6b7280;}
+    *{box-sizing:border-box} body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);margin:0;padding:20px}
+    .container{max-width:1200px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
+    .header{background:var(--brand);color:#fff;padding:22px;text-align:center}
+    .nav-tabs{display:flex;border-bottom:1px solid var(--line)}
+    .nav-tab{flex:1;padding:12px 16px;background:#f8f9fa;border:none;cursor:pointer}
+    .nav-tab.active{background:#fff;border-bottom:3px solid var(--brand);font-weight:600}
+    .tab-content{display:none;padding:22px}.tab-content.active{display:block}
+    /* Forms */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}.form-row.full{grid-template-columns:1fr}
+    label{display:block;margin:6px 0;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;border:1px solid #cfd6de;border-radius:6px;background:#fff}
+    textarea{min-height:90px;resize:vertical}
+    .btn{padding:8px 14px;border:none;border-radius:8px;cursor:pointer;font-weight:600}
+    .btn-primary{background:var(--brand);color:#fff}.btn-secondary{background:#6c757d;color:#fff}
+    .btn-danger{background:#dc3545;color:#fff}.btn-ghost{background:#fff;border:1px solid var(--line);color:#111}
+    /* Table */
+    .cases-table{width:100%;border-collapse:collapse;margin-top:14px}
+    .cases-table th,.cases-table td{padding:10px;border-bottom:1px solid var(--line)}.cases-table th{background:var(--brand);color:#fff}
+    .actions{display:flex;gap:6px;flex-wrap:wrap}
+    .status-abierto{color:green;font-weight:bold}
+    .status-en{color:blue;font-weight:bold}
+    .status-cerrado{color:red;font-weight:bold}
+    /* Highlight edited row */
+    .row-highlight{animation:hilite 2.2s ease-in-out 1; background:#fff9c4 !important}
+    @keyframes hilite{0%{background:#fff9c4} 100%{background:transparent}}
+    /* Sidebar Seguimiento */
+    #sidebarSeguimiento{position:fixed;top:0;right:-460px;width:460px;height:100%;background:#fff;box-shadow:-2px 0 14px rgba(0,0,0,.15);transition:right .28s;z-index:1200;display:flex;flex-direction:column}
+    #sidebarSeguimiento.active{right:0}
+    #sidebarSeguimiento .s-header{background:var(--brand);color:#fff;padding:14px;display:flex;justify-content:space-between;align-items:center}
+    #sidebarSeguimiento .s-body{padding:16px;overflow:auto;flex:1}
+    .timeline-item{border-left:3px solid var(--brand);margin-left:10px;padding-left:12px;margin-bottom:12px;position:relative}
+    .timeline-item .date{font-size:.82rem;color:var(--muted)}.timeline-item .delete-btn{position:absolute;right:0;top:0;background:none;border:none;color:#dc3545;cursor:pointer}
+    .seguimiento-form{border-top:1px solid var(--line);padding:14px;background:#fafbfc}
+    /* Modal */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1300;align-items:center;justify-content:center;padding:20px}
+    .modal.open{display:flex}.modal-card{width:min(920px,96vw);max-height:88vh;background:#fff;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+    .modal-head{background:var(--brand);color:#fff;padding:14px;display:flex;justify-content:space-between}
+    .modal-body{padding:18px;overflow:auto}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.section{border:1px solid var(--line);border-radius:8px;padding:12px}
+    .print-actions{padding:12px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line)}
+    /* Filtros */
+    .filters{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+    .filters input,.filters select{padding:8px;border-radius:6px;border:1px solid var(--line)}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Sistema de Protección de Personas</h1>
-            <p>Defensoría Oficial del Poder Judicial de Misiones</p>
-            <p style="font-size: 0.9rem; margin-top: 10px;">Basado en Ley II-N°41 y legislación vigente en Argentina</p>
-        </div>
-
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="showTab('dashboard')">Estadistica</button>
-            <button class="nav-tab" onclick="showTab('registro')">Nuevo Caso</button>
-            <button class="nav-tab" onclick="showTab('casos')">Casos Registrados</button>
-        </div>
-
-        <!-- Dashboard Tab -->
-        <div id="dashboard" class="tab-content active">
-            <h2 style="margin-bottom: 30px; color: #2c3e50;">Resumen General</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalCasos">0</div>
-                    <div class="stat-label">Total de Casos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="casosAbiertos">0</div>
-                    <div class="stat-label">Casos Abiertos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="casosProceso">0</div>
-                    <div class="stat-label">En Proceso</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="casosCerrados">0</div>
-                    <div class="stat-label">Casos Cerrados</div>
-                </div>
-            </div>
-            <h3 style="margin-bottom: 20px; color: #2c3e50;">Casos Recientes</h3>
-            <div id="casosRecientes"></div>
-        </div>
-
-        <!-- Registro Tab -->
-        <div id="registro" class="tab-content">
-            <h2 style="margin-bottom: 30px; color: #2c3e50;">Registro de Nuevo Caso</h2>
-            <div id="alertContainer"></div>
-            <form id="casoForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="nombreNNA">Nombre Completo del NNA *</label>
-                        <input type="text" id="nombreNNA" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="dniNNA">DNI del NNA</label>
-                        <input type="text" id="dniNNA">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="fechaNacimientoNNA">Fecha de Nacimiento *</label>
-                        <input type="date" id="fechaNacimientoNNA" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="generoNNA">Género</label>
-                        <select id="generoNNA">
-                            <option value="">Seleccionar...</option>
-                            <option value="Masculino">Masculino</option>
-                            <option value="Femenino">Femenino</option>
-                            <option value="No binario">No binario</option>
-                            <option value="Prefiere no decir">Prefiere no decir</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row full">
-                    <div class="form-group">
-                        <label for="domicilioNNA">Domicilio del NNA</label>
-                        <input type="text" id="domicilioNNA">
-                    </div>
-                </div>
-                <div class="form-row full">
-                    <div class="form-group">
-                        <label for="situacionVulneracion">Descripción de la Situación de Vulneración *</label>
-                        <textarea id="situacionVulneracion" required placeholder="Describa detalladamente la situación de acoso, maltrato, abuso o violencia..."></textarea>
-                    </div>
-                </div>
-                <div class="form-row full">
-                    <div class="form-group">
-                        <label for="accionesTomadas">Acciones Iniciales Tomadas</label>
-                        <textarea id="accionesTomadas" placeholder="Describa las acciones iniciales tomadas por la Defensoría..."></textarea>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="estadoCaso">Estado del Caso</label>
-                        <select id="estadoCaso">
-                            <option value="Abierto">Abierto</option>
-                            <option value="En Proceso">En Proceso</option>
-                            <option value="Cerrado">Cerrado</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="observacionesAdicionales">Observaciones Adicionales</label>
-                        <textarea id="observacionesAdicionales" style="min-height: 80px;"></textarea>
-                    </div>
-                </div>
-                <div style="text-align: center; margin-top: 30px;">
-                    <button type="submit" class="btn btn-primary">Registrar Caso</button>
-                    <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">Limpiar Formulario</button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Casos Tab -->
-        <div id="casos" class="tab-content">
-            <h2 style="margin-bottom: 30px; color: #2c3e50;">Casos Registrados</h2>
-            <div class="search-container">
-                <div class="form-group">
-                    <label for="buscarNombre">Buscar por Nombre</label>
-                    <input type="text" id="buscarNombre" placeholder="Nombre del NNA...">
-                </div>
-                <div class="form-group">
-                    <label for="filtrarEstado">Filtrar por Estado</label>
-                    <select id="filtrarEstado">
-                        <option value="">Todos los estados</option>
-                        <option value="Abierto">Abierto</option>
-                        <option value="En Proceso">En Proceso</option>
-                        <option value="Cerrado">Cerrado</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <button class="btn btn-primary" onclick="buscarCasos()">Buscar</button>
-                </div>
-            </div>
-            <div id="tablaCasos"></div>
-        </div>
+  <div class="container">
+    <div class="header"><h1>Sistema de Protección de Personas</h1></div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showTab('inicio',event)">Panel de Inicio</button>
+      <button class="nav-tab" onclick="showTab('registro',event)">Nuevo Caso</button>
+      <button class="nav-tab" onclick="showTab('casos',event)">Casos Registrados</button>
     </div>
 
-    <!-- Modal para ver detalles del caso -->
-    <div id="modalDetalle" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="close" onclick="cerrarModal()">&times;</span>
-                <h2>Detalles del Caso</h2>
-            </div>
-            <div class="modal-body" id="modalBody"></div>
+    <!-- Inicio -->
+    <div id="inicio" class="tab-content active">
+      <h2>Panel de Inicio</h2>
+      <p style="color:#555;font-size:.95rem;background:#fff3cd;padding:10px;border-radius:8px">
+        ℹ️ <b>Ayuda:</b> Use las pestañas superiores para registrar nuevos casos, ver el listado o gestionar seguimientos.
+      </p>
+      <div class="grid-2">
+        <div class="section"><h4>Totales</h4>
+          <p>Total: <strong id="totalCasos">0</strong></p>
+          <p class="status-abierto">Abiertos: <strong id="casosAbiertos">0</strong></p>
+          <p class="status-en">En Proceso: <strong id="casosProceso">0</strong></p>
+          <p class="status-cerrado">Cerrados: <strong id="casosCerrados">0</strong></p>
         </div>
+      </div>
+      <button class="btn btn-primary" onclick="imprimirSeccion('inicio')">Imprimir Panel</button>
     </div>
 
-    <!-- Modal para agregar seguimiento -->
-    <div id="modalSeguimiento" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="close" onclick="cerrarModalSeguimiento()">&times;</span>
-                <h2>Agregar Seguimiento</h2>
-            </div>
-            <div class="modal-body">
-                <form id="seguimientoForm">
-                    <div class="form-group">
-                        <label for="fechaSeguimiento">Fecha *</label>
-                        <input type="date" id="fechaSeguimiento" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="responsableSeguimiento">Responsable</label>
-                        <input type="text" id="responsableSeguimiento" placeholder="Nombre del responsable...">
-                    </div>
-                    <div class="form-group">
-                        <label for="descripcionSeguimiento">Descripción del Seguimiento *</label>
-                        <textarea id="descripcionSeguimiento" required placeholder="Describa las acciones realizadas, observaciones, etc..."></textarea>
-                    </div>
-                    <div style="text-align: center; margin-top: 20px;">
-                        <button type="submit" class="btn btn-primary">Agregar Seguimiento</button>
-                        <button type="button" class="btn btn-secondary" onclick="cerrarModalSeguimiento()">Cancelar</button>
-                    </div>
-                </form>
-            </div>
+    <!-- Registro -->
+    <div id="registro" class="tab-content">
+      <h2 id="formTitle">Nuevo Caso</h2>
+      <form id="casoForm">
+        <div class="form-row">
+          <div><label>Nombre *</label><input id="nombreNNA" required></div>
+          <div><label>DNI</label><input id="dniNNA"></div>
         </div>
+        <div class="form-row">
+          <div><label>Fecha nac.</label><input type="date" id="fechaNacimientoNNA"></div>
+          <div><label>Género</label><select id="generoNNA"><option></option><option>Masculino</option><option>Femenino</option></select></div>
+        </div>
+        <div class="form-row full"><label>Situación</label><textarea id="situacionVulneracion"></textarea></div>
+        <div class="form-row full"><label>Seguimiento inicial</label><textarea id="seguimientoInicial"></textarea></div>
+        <div class="form-row"><label>Estado</label><select id="estadoCaso"><option>Abierto</option><option>En Proceso</option><option>Cerrado</option></select></div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <button type="button" class="btn btn-secondary" onclick="imprimirSeccion('registro')">Imprimir</button>
+        </div>
+      </form>
     </div>
 
-    <!-- Firebase + Lógica de la App -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    <!-- Casos -->
+    <div id="casos" class="tab-content">
+      <h2>Casos Registrados</h2>
+      <div class="filters">
+        <input id="searchInput" placeholder="Buscar nombre/DNI" oninput="aplicarFiltros()">
+        <select id="estadoFilter" onchange="aplicarFiltros()">
+          <option value="">Todos</option><option>Abierto</option><option>En Proceso</option><option>Cerrado</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="imprimirSeccion('casos')">Imprimir listado</button>
+      <div id="tablaCasos"></div>
+    </div>
+  </div>
 
-        const firebaseConfig = {
-          apiKey: "AIzaSyAWlsFqN09y_DAAIKLLIjGjjyR2_rKJIFs",
-          authDomain: "proteccion-personas.firebaseapp.com",
-          projectId: "proteccion-personas",
-          storageBucket: "proteccion-personas.firebasestorage.app",
-          messagingSenderId: "2514489389",
-          appId: "1:2514489389:web:8ffec153de662edc7e68a4"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+  <!-- Sidebar Seguimiento -->
+  <aside id="sidebarSeguimiento">
+    <div class="s-header"><span id="sidebarTitle"></span>
+      <div>
+        <button class="btn btn-secondary" onclick="imprimirSeccion('sidebarSeguimiento')">Imprimir</button>
+        <button class="btn btn-danger" onclick="cerrarSidebar()">✕</button>
+      </div>
+    </div>
+    <div class="s-body"><div id="timeline"></div></div>
+    <div class="seguimiento-form">
+      <textarea id="nuevoSeguimiento" rows="3" placeholder="Agregar seguimiento..."></textarea>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="guardarSeguimiento()">Agregar Seguimiento</button>
+    </div>
+  </aside>
 
-        // Variables globales
-        let casos = [];
-        let casoActual = null; // objeto caso seleccionado para detalle/seguimiento
-        let casoActualId = null; // id del documento en Firestore
+  <!-- Modal Caso -->
+  <div id="modalCaso" class="modal"><div class="modal-card">
+    <div class="modal-head"><h3>Detalle</h3>
+      <div>
+        <button class="btn btn-secondary" onclick="imprimirSeccion('modalCasoBody')">Imprimir</button>
+        <button class="btn btn-danger" onclick="cerrarModalCaso()">✕</button>
+      </div></div>
+    <div class="modal-body" id="modalCasoBody"></div>
+    <div class="print-actions">
+      <button class="btn btn-danger" onclick="eliminarCaso()">Eliminar Caso</button>
+    </div>
+  </div></div>
 
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', async () => {
-            await cargarCasos();
-            actualizarDashboard();
-            mostrarCasosRecientes();
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-            document.getElementById('casoForm').addEventListener('submit', registrarCaso);
-            document.getElementById('seguimientoForm').addEventListener('submit', agregarSeguimiento);
-            document.getElementById('buscarNombre').addEventListener('input', buscarCasos);
-            document.getElementById('filtrarEstado').addEventListener('change', buscarCasos);
+    // 🔧 Helpers DOM
+    const $ = (id)=>document.getElementById(id);
 
-            document.getElementById('fechaSeguimiento').valueAsDate = new Date();
+    // 🔥 Firebase
+    const app = initializeApp({
+      apiKey:"AIzaSyAWlsFqN09y_DAAIKLLIjGjjyR2_rKJIFs",
+      authDomain:"proteccion-personas.firebaseapp.com",
+      projectId:"proteccion-personas"
+    });
+    const db = getFirestore(app);
+
+    // 🔧 Estado App
+    let casos = [];
+    let casosFiltrados = [];
+    let casoActual = null;
+    let editandoId = null;
+    let lastEditedId = null; // para resaltar fila luego de editar
+
+    // 🔗 Referencias DOM
+    const form = $('casoForm');
+    const formTitle = $('formTitle');
+    const nombreNNA = $('nombreNNA');
+    const dniNNA = $('dniNNA');
+    const fechaNacimientoNNA = $('fechaNacimientoNNA');
+    const generoNNA = $('generoNNA');
+    const situacionVulneracion = $('situacionVulneracion');
+    const seguimientoInicial = $('seguimientoInicial');
+    const estadoCaso = $('estadoCaso');
+
+    const searchInput = $('searchInput');
+    const estadoFilter = $('estadoFilter');
+    const tablaCasos = $('tablaCasos');
+
+    const totalCasos = $('totalCasos');
+    const casosAbiertos = $('casosAbiertos');
+    const casosProceso = $('casosProceso');
+    const casosCerrados = $('casosCerrados');
+
+    const sidebarSeguimiento = $('sidebarSeguimiento');
+    const sidebarTitle = $('sidebarTitle');
+    const timeline = $('timeline');
+    const nuevoSeguimiento = $('nuevoSeguimiento');
+
+    const modalCaso = $('modalCaso');
+    const modalCasoBody = $('modalCasoBody');
+
+    // ⏯️ Eventos
+    document.addEventListener("DOMContentLoaded", cargarCasos);
+    form.addEventListener("submit", guardarCaso);
+
+    async function cargarCasos(){
+      casos = [];
+      const s = await getDocs(collection(db,"casos"));
+      s.forEach(d=>casos.push({id:d.id, ...d.data()}));
+      aplicarFiltros();
+      actualizarDashboard();
+    }
+
+    function aplicarFiltros(){
+      const q = (searchInput.value||"").toLowerCase();
+      const est = estadoFilter.value||"";
+      casosFiltrados = casos
+        .filter(c => (c.nombreNNA||"").toLowerCase().includes(q) || (c.dniNNA||"").includes(q))
+        .filter(c => !est || c.estadoCaso===est);
+      mostrarCasos();
+    }
+
+    function mostrarCasos(){
+      if(!casosFiltrados.length){ tablaCasos.innerHTML = "<p>Sin casos</p>"; return; }
+      let h = "<table class='cases-table'><tr><th></th><th>Nombre</th><th>Estado</th><th>Acciones</th></tr>";
+      for(const c of casosFiltrados){
+        const cls = c.estadoCaso==="Abierto" ? "status-abierto" : (c.estadoCaso==="Cerrado" ? "status-cerrado" : "status-en");
+        h += `<tr id="row-${c.id}">
+                <td><input type="checkbox" onchange="toggleSidebar('${c.id}',this.checked)"></td>
+                <td>${c.nombreNNA||""}</td>
+                <td class="${cls}">${c.estadoCaso||""}</td>
+                <td class="actions">
+                  <button class="btn btn-ghost" onclick="editarCaso('${c.id}')">Editar</button>
+                  <button class="btn btn-ghost" onclick="verCaso('${c.id}')">Ver</button>
+                  <button class="btn btn-danger" onclick="eliminarCaso('${c.id}')">Eliminar</button>
+                </td>
+              </tr>`;
+      }
+      h += "</table>";
+      tablaCasos.innerHTML = h;
+
+      // Resaltar fila editada
+      if(lastEditedId){
+        const row = $('row-'+lastEditedId);
+        if(row){
+          row.classList.add('row-highlight');
+          row.scrollIntoView({behavior:'smooth', block:'center'});
+        }
+        lastEditedId = null;
+      }
+    }
+
+    async function guardarCaso(e){
+      e.preventDefault();
+      const data = {
+        nombreNNA: nombreNNA.value,
+        dniNNA: dniNNA.value,
+        fechaNacimientoNNA: fechaNacimientoNNA.value,
+        generoNNA: generoNNA.value,
+        situacionVulneracion: situacionVulneracion.value,
+        estadoCaso: estadoCaso.value
+      };
+      if(editandoId){
+        const ref = doc(db,"casos",editandoId);
+        const snap = await getDoc(ref);
+        let historial = (snap.exists() && snap.data().historial) ? snap.data().historial : [];
+        historial.push({fecha:new Date().toLocaleString(), accion:"Edición del caso"});
+        await updateDoc(ref, {...data, historial});
+        lastEditedId = editandoId;
+        editandoId = null;
+        formTitle.textContent = "Nuevo Caso";
+      }else{
+        await addDoc(collection(db,"casos"),{
+          ...data,
+          fechaRegistro: new Date().toISOString().split("T")[0],
+          seguimientos: seguimientoInicial.value ? [{fecha:new Date().toLocaleString(), texto: seguimientoInicial.value}] : [],
+          historial: [{fecha:new Date().toLocaleString(), accion:"Creación del caso"}]
         });
+      }
+      form.reset();
+      await cargarCasos();
+      showTab('casos');
+    }
 
-        // Gestión de pestañas (se mantiene igual)
-        window.showTab = function(tabName) {
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            const buttons = document.querySelectorAll('.nav-tab');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+    // 🖊️ Editar (expuesta a window)
+    window.editarCaso = (id)=>{
+      const c = casos.find(x=>x.id===id);
+      if(!c) return;
+      editandoId = id;
+      formTitle.textContent = "Editar Caso";
+      nombreNNA.value = c.nombreNNA || "";
+      dniNNA.value = c.dniNNA || "";
+      fechaNacimientoNNA.value = c.fechaNacimientoNNA || "";
+      generoNNA.value = c.generoNNA || "";
+      situacionVulneracion.value = c.situacionVulneracion || "";
+      estadoCaso.value = c.estadoCaso || "Abierto";
+      showTab('registro');
+    };
 
-            if (tabName === 'dashboard') {
-                actualizarDashboard();
-                mostrarCasosRecientes();
-            } else if (tabName === 'casos') {
-                mostrarCasos();
-            }
+    function actualizarDashboard(){
+      totalCasos.textContent = casos.length;
+      casosAbiertos.textContent = casos.filter(c=>c.estadoCaso==="Abierto").length;
+      casosProceso.textContent = casos.filter(c=>c.estadoCaso==="En Proceso").length;
+      casosCerrados.textContent = casos.filter(c=>c.estadoCaso==="Cerrado").length;
+    }
+
+    // 📎 Sidebar seguimiento
+    window.toggleSidebar = async (id, ch)=>{
+      if(ch){
+        const s = await getDoc(doc(db,"casos",id));
+        if(s.exists()){
+          casoActual = {id, ...s.data()};
+          sidebarTitle.textContent = "Seguimiento · " + (casoActual.nombreNNA||"");
+          renderTimeline();
+          sidebarSeguimiento.classList.add("active");
         }
+      }else{
+        cerrarSidebar();
+      }
+    };
 
-        // ======= CRUD Firestore =======
-        async function cargarCasos() {
-            const snap = await getDocs(collection(db, "casos"));
-            casos = [];
-            snap.forEach(d => casos.push({ id: d.id, ...d.data() }));
-        }
+    function renderTimeline(){
+      timeline.innerHTML = (casoActual.seguimientos||[])
+        .map((s,i)=>`<div class='timeline-item'>
+                        <div class='date'>${s.fecha}</div>
+                        <div>${s.texto}</div>
+                        <button class='delete-btn' onclick='eliminarSeguimiento(${i})'>✕</button>
+                      </div>`).join("") || "<p>Sin seguimientos</p>";
+    }
 
-        async function registrarCaso(e) {
-            e.preventDefault();
-            const nuevoCaso = leerFormularioCaso();
-            await addDoc(collection(db, "casos"), nuevoCaso);
-            mostrarAlerta('Caso registrado exitosamente', 'success');
-            limpiarFormulario();
-            await cargarCasos();
-            actualizarDashboard();
-        }
+    window.guardarSeguimiento = async ()=>{
+      if(!casoActual || !nuevoSeguimiento.value) return;
+      const arr = Array.isArray(casoActual.seguimientos) ? casoActual.seguimientos : [];
+      arr.push({fecha:new Date().toLocaleString(), texto:nuevoSeguimiento.value});
+      await updateDoc(doc(db,"casos",casoActual.id), {seguimientos:arr});
+      casoActual.seguimientos = arr;
+      nuevoSeguimiento.value = "";
+      renderTimeline();
+    };
 
-        async function actualizarCaso(id) {
-            const ref = doc(db, "casos", id);
-            const datosActualizados = leerFormularioCaso(false);
-            await updateDoc(ref, datosActualizados);
-            mostrarAlerta('Caso actualizado exitosamente', 'success');
-            restaurarFormularioRegistro();
-            limpiarFormulario();
-            await cargarCasos();
-            actualizarDashboard();
-        }
+    window.eliminarSeguimiento = async (i)=>{
+      if(!casoActual) return;
+      const arr = Array.isArray(casoActual.seguimientos) ? casoActual.seguimientos : [];
+      arr.splice(i,1);
+      await updateDoc(doc(db,"casos",casoActual.id), {seguimientos:arr});
+      casoActual.seguimientos = arr;
+      renderTimeline();
+    };
 
-        async function eliminarCaso(id) {
-            if (!confirm('¿Está seguro de que desea eliminar este caso? Esta acción no se puede deshacer.')) return;
-            // Eliminar subcolección seguimiento (recorrido simple)
-            const segSnap = await getDocs(collection(db, "casos", id, "seguimiento"));
-            const deletions = [];
-            segSnap.forEach(s => deletions.push(deleteDoc(doc(db, "casos", id, "seguimiento", s.id))));
-            await Promise.all(deletions);
-            // Eliminar caso
-            await deleteDoc(doc(db, "casos", id));
-            await cargarCasos();
-            mostrarCasos();
-            actualizarDashboard();
-        }
+    window.cerrarSidebar = ()=>{
+      sidebarSeguimiento.classList.remove("active");
+      document.querySelectorAll("#tablaCasos input[type=checkbox]").forEach(c=>c.checked=false);
+    };
 
-        // ======= Seguimiento (subcolección) =======
-        async function cargarSeguimiento(casoId) {
-            const segRef = collection(db, "casos", casoId, "seguimiento");
-            // Ordenar por fecha asc
-            const q = query(segRef, orderBy("fecha", "asc"));
-            const snap = await getDocs(q);
-            const items = [];
-            snap.forEach(s => items.push({ id: s.id, ...s.data() }));
-            return items;
-        }
+    // 🪟 Modal caso
+    window.verCaso = async (id)=>{
+      const s = await getDoc(doc(db,"casos",id));
+      if(!s.exists()) return;
+      casoActual = {id, ...s.data()};
+      const historialHTML = (casoActual.historial||[])
+        .map(h=>`<p><span class='status-en'>${h.fecha}</span>: ${h.accion}</p>`).join("") || "<p>Sin historial</p>";
+      const seguimientosHTML = (casoActual.seguimientos||[])
+        .map(sg=>`<p><span class='status-en'>${sg.fecha}</span>: ${sg.texto}</p>`).join("") || "<p>Sin seguimiento</p>";
 
-        async function agregarSeguimiento(e) {
-            e.preventDefault();
-            if (!casoActualId) return;
-            const nuevo = {
-                fecha: (document.getElementById('fechaSeguimiento').value || new Date().toISOString().split('T')[0]),
-                responsable: document.getElementById('responsableSeguimiento').value,
-                descripcion: document.getElementById('descripcionSeguimiento').value
-            };
-            await addDoc(collection(db, "casos", casoActualId, "seguimiento"), nuevo);
-            document.getElementById('seguimientoForm').reset();
-            document.getElementById('fechaSeguimiento').valueAsDate = new Date();
-            cerrarModalSeguimiento();
-            // refrescar lista en el modal de detalle
-            const segs = await cargarSeguimiento(casoActualId);
-            document.getElementById('listaSeguimiento').innerHTML = mostrarSeguimiento(segs);
-        }
+      modalCasoBody.innerHTML = `
+        <div class='grid-2'>
+          <div class='section'>
+            <h4>Datos</h4>
+            <p><b>Nombre:</b> ${casoActual.nombreNNA||""}</p>
+            <p><b>DNI:</b> ${casoActual.dniNNA||""}</p>
+            <p><b>Fecha Nac.:</b> ${casoActual.fechaNacimientoNNA||""}</p>
+            <p><b>Género:</b> ${casoActual.generoNNA||""}</p>
+            <p><b>Estado:</b> ${casoActual.estadoCaso||""}</p>
+          </div>
+          <div class='section'>
+            <h4>Situación</h4>
+            <p>${(casoActual.situacionVulneracion||"").replace(/\n/g,"<br>")}</p>
+          </div>
+        </div>
+        <div class='section'>
+          <h4>Seguimientos</h4>
+          ${seguimientosHTML}
+        </div>
+        <div class='section'>
+          <h4>Historial de cambios</h4>
+          ${historialHTML}
+        </div>`;
+      modalCaso.classList.add("open");
+    };
 
-        // ======= UI Helpers =======
-        function leerFormularioCaso(withSeguimientoArray = true) {
-            const base = {
-                fechaRegistro: new Date().toISOString().split('T')[0],
-                nombreNNA: document.getElementById('nombreNNA').value,
-                dniNNA: document.getElementById('dniNNA').value,
-                fechaNacimientoNNA: document.getElementById('fechaNacimientoNNA').value,
-                generoNNA: document.getElementById('generoNNA').value,
-                domicilioNNA: document.getElementById('domicilioNNA').value,
-                situacionVulneracion: document.getElementById('situacionVulneracion').value,
-                accionesTomadas: document.getElementById('accionesTomadas').value,
-                estadoCaso: document.getElementById('estadoCaso').value,
-                observacionesAdicionales: document.getElementById('observacionesAdicionales').value
-            };
-            return base;
-        }
+    window.cerrarModalCaso = ()=> modalCaso.classList.remove("open");
 
-        window.limpiarFormulario = function() {
-            document.getElementById('casoForm').reset();
-        }
+    window.eliminarCaso = async (id)=>{
+      const targetId = id || (casoActual && casoActual.id);
+      if(!targetId) return;
+      if(confirm("Eliminar caso?")){
+        await deleteDoc(doc(db,"casos",targetId));
+        modalCaso.classList.remove("open");
+        await cargarCasos();
+      }
+    };
 
-        function mostrarAlerta(mensaje, tipo) {
-            const alertContainer = document.getElementById('alertContainer');
-            const alertClass = tipo === 'success' ? 'alert-success' : 'alert-error';
-            alertContainer.innerHTML = `<div class="alert ${alertClass}">${mensaje}</div>`;
-            setTimeout(() => alertContainer.innerHTML = '', 5000);
-        }
+    // 🖨️ Impresión
+    window.imprimirSeccion = (id)=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      const w = window.open("", "_blank");
+      w.document.write(`<html><head><title>Imprimir</title></head><body>${el.innerHTML}</body></html>`);
+      w.document.close();
+      w.focus();
+      w.print();
+    };
 
-        function actualizarDashboard() {
-            const total = casos.length;
-            const abiertos = casos.filter(c => c.estadoCaso === 'Abierto').length;
-            const proceso = casos.filter(c => c.estadoCaso === 'En Proceso').length;
-            const cerrados = casos.filter(c => c.estadoCaso === 'Cerrado').length;
-
-            document.getElementById('totalCasos').textContent = total;
-            document.getElementById('casosAbiertos').textContent = abiertos;
-            document.getElementById('casosProceso').textContent = proceso;
-            document.getElementById('casosCerrados').textContent = cerrados;
-        }
-
-        function mostrarCasosRecientes() {
-            const recientes = [...casos].sort((a,b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro)).slice(0,5);
-            const container = document.getElementById('casosRecientes');
-            if (recientes.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #6c757d;">No hay casos registrados</p>';
-                return;
-            }
-            let html = '<table class="cases-table"><thead><tr><th>Fecha</th><th>Nombre</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>';
-            recientes.forEach(caso => {
-                html += `
-                    <tr>
-                        <td>${formatearFecha(caso.fechaRegistro)}</td>
-                        <td>${caso.nombreNNA}</td>
-                        <td><span class="status-badge status-${(caso.estadoCaso || '').toLowerCase().replace(' ', '')}">${caso.estadoCaso}</span></td>
-                        <td><button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem;" onclick="verDetalle('${caso.id}')">Ver</button></td>
-                    </tr>`;
-            });
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
-
-        function mostrarCasos() { buscarCasos(); }
-
-        window.buscarCasos = function() {
-            const nombreBuscar = (document.getElementById('buscarNombre').value || '').toLowerCase();
-            const estadoFiltrar = document.getElementById('filtrarEstado').value;
-            let casosFiltrados = [...casos];
-            if (nombreBuscar) {
-                casosFiltrados = casosFiltrados.filter(c => (c.nombreNNA || '').toLowerCase().includes(nombreBuscar));
-            }
-            if (estadoFiltrar) {
-                casosFiltrados = casosFiltrados.filter(c => c.estadoCaso === estadoFiltrar);
-            }
-            mostrarTablaCasos(casosFiltrados);
-        }
-
-        function mostrarTablaCasos(casosMostrar) {
-            const container = document.getElementById('tablaCasos');
-            if (!casosMostrar.length) { container.innerHTML = '<p style="text-align: center; color: #6c757d;">No se encontraron casos</p>'; return; }
-            let html = '<table class="cases-table"><thead><tr><th>Fecha Registro</th><th>Nombre</th><th>Edad</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>';
-            casosMostrar.forEach(caso => {
-                const edad = calcularEdad(caso.fechaNacimientoNNA);
-                html += `
-                    <tr>
-                        <td>${formatearFecha(caso.fechaRegistro)}</td>
-                        <td>${caso.nombreNNA}</td>
-                        <td>${edad} años</td>
-                        <td><span class="status-badge status-${(caso.estadoCaso || '').toLowerCase().replace(' ', '')}">${caso.estadoCaso}</span></td>
-                        <td>
-                            <button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem; margin-right: 5px;" onclick="verDetalle('${caso.id}')">Ver</button>
-                            <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8rem; margin-right: 5px;" onclick="editarCaso('${caso.id}')">Editar</button>
-                            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="eliminarCaso('${caso.id}')">Eliminar</button>
-                        </td>
-                    </tr>`;
-            });
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
-
-        // ======= Detalle y Seguimiento =======
-        window.verDetalle = async function(id) {
-            const caso = casos.find(c => c.id === id);
-            if (!caso) return;
-            casoActual = caso;
-            casoActualId = id;
-
-            const segs = await cargarSeguimiento(id);
-            const edad = calcularEdad(caso.fechaNacimientoNNA);
-            let html = `
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 20px;">Información del NNA</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                        <div><strong>Nombre:</strong> ${caso.nombreNNA}</div>
-                        <div><strong>DNI:</strong> ${caso.dniNNA || 'No especificado'}</div>
-                        <div><strong>Fecha de Nacimiento:</strong> ${formatearFecha(caso.fechaNacimientoNNA)}</div>
-                        <div><strong>Edad:</strong> ${edad} años</div>
-                        <div><strong>Género:</strong> ${caso.generoNNA || 'No especificado'}</div>
-                        <div><strong>Estado del Caso:</strong> <span class="status-badge status-${(caso.estadoCaso || '').toLowerCase().replace(' ', '')}">${caso.estadoCaso}</span></div>
-                    </div>
-                    <div style="margin-bottom: 15px;"><strong>Domicilio:</strong> ${caso.domicilioNNA || 'No especificado'}</div>
-                    <div style="margin-bottom: 15px;"><strong>Fecha de Registro:</strong> ${formatearFecha(caso.fechaRegistro)}</div>
-                </div>
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 15px;">Situación de Vulneración</h3>
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #dc3545;">${caso.situacionVulneracion}</div>
-                </div>
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 15px;">Acciones Tomadas</h3>
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745;">${caso.accionesTomadas || 'No se han registrado acciones específicas'}</div>
-                </div>
-                ${caso.observacionesAdicionales ? `
-                <div style="margin-bottom: 30px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 15px;">Observaciones Adicionales</h3>
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">${caso.observacionesAdicionales}</div>
-                </div>` : ''}
-                <div style="margin-bottom: 30px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3 style="color: #2c3e50; margin: 0;">Seguimiento del Caso</h3>
-                        <button class="btn btn-primary" onclick="abrirModalSeguimiento()">Agregar Seguimiento</button>
-                    </div>
-                    <div id="listaSeguimiento">${mostrarSeguimiento(segs)}</div>
-                </div>`;
-            document.getElementById('modalBody').innerHTML = html;
-            document.getElementById('modalDetalle').style.display = 'block';
-        }
-
-        function mostrarSeguimiento(seguimiento) {
-            if (!seguimiento || seguimiento.length === 0) {
-                return '<p style="color: #6c757d; text-align: center;">No hay seguimientos registrados</p>';
-            }
-            let html = '';
-            seguimiento.forEach(item => {
-                html += `
-                    <div class="seguimiento-item">
-                        <div class="seguimiento-fecha">${formatearFecha(item.fecha)}</div>
-                        ${item.responsable ? `<div style="font-weight: 500; margin-bottom: 5px;">Responsable: ${item.responsable}</div>` : ''}
-                        <div>${item.descripcion}</div>
-                    </div>`;
-            });
-            return html;
-            }
-
-        window.abrirModalSeguimiento = function() {
-            document.getElementById('modalSeguimiento').style.display = 'block';
-        }
-        window.cerrarModalSeguimiento = function() {
-            document.getElementById('modalSeguimiento').style.display = 'none';
-            document.getElementById('seguimientoForm').reset();
-            document.getElementById('fechaSeguimiento').valueAsDate = new Date();
-        }
-        window.cerrarModal = function() {
-            document.getElementById('modalDetalle').style.display = 'none';
-            casoActual = null; casoActualId = null;
-        }
-
-        // ======= Edición =======
-        window.editarCaso = function(id) {
-            const caso = casos.find(c => c.id === id);
-            if (!caso) return;
-            document.getElementById('nombreNNA').value = caso.nombreNNA || '';
-            document.getElementById('dniNNA').value = caso.dniNNA || '';
-            document.getElementById('fechaNacimientoNNA').value = caso.fechaNacimientoNNA || '';
-            document.getElementById('generoNNA').value = caso.generoNNA || '';
-            document.getElementById('domicilioNNA').value = caso.domicilioNNA || '';
-            document.getElementById('situacionVulneracion').value = caso.situacionVulneracion || '';
-            document.getElementById('accionesTomadas').value = caso.accionesTomadas || '';
-            document.getElementById('estadoCaso').value = caso.estadoCaso || 'Abierto';
-            document.getElementById('observacionesAdicionales').value = caso.observacionesAdicionales || '';
-
-            showTab('registro');
-            const form = document.getElementById('casoForm');
-            form.onsubmit = function(e) {
-                e.preventDefault();
-                actualizarCaso(id);
-            };
-            const submitBtn = form.querySelector('button[type="submit"]');
-            submitBtn.textContent = 'Actualizar Caso';
-            submitBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
-        }
-
-        function restaurarFormularioRegistro() {
-            const form = document.getElementById('casoForm');
-            form.onsubmit = registrarCaso;
-            const submitBtn = form.querySelector('button[type="submit"]');
-            submitBtn.textContent = 'Registrar Caso';
-            submitBtn.style.background = 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)';
-        }
-
-        // ======= Utilidades =======
-        function formatearFecha(fecha) {
-            if (!fecha) return 'No especificada';
-            const date = new Date(fecha);
-            return date.toLocaleDateString('es-AR');
-        }
-        function calcularEdad(fechaNacimiento) {
-            if (!fechaNacimiento) return 'No especificada';
-            const hoy = new Date();
-            const nacimiento = new Date(fechaNacimiento);
-            let edad = hoy.getFullYear() - nacimiento.getFullYear();
-            const mes = hoy.getMonth() - nacimiento.getMonth();
-            if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
-            return edad;
-        }
-
-        // Cerrar modales al hacer clic fuera
-        window.onclick = function(event) {
-            const modalDetalle = document.getElementById('modalDetalle');
-            const modalSeguimiento = document.getElementById('modalSeguimiento');
-            if (event.target === modalDetalle) cerrarModal();
-            if (event.target === modalSeguimiento) cerrarModalSeguimiento();
-        }
-    </script>
+    // 🧭 Tabs (expuesta a window)
+    window.showTab = (id, e)=>{
+      document.querySelectorAll(".tab-content").forEach(x=>x.classList.remove("active"));
+      document.querySelectorAll(".nav-tab").forEach(x=>x.classList.remove("active"));
+      const tab = document.getElementById(id);
+      if(tab) tab.classList.add("active");
+      if(e && e.target) e.target.classList.add("active");
+    };
+  </script>
 </body>
 </html>
