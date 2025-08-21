@@ -129,6 +129,11 @@
         </div>
 
         <div class="form-row full"><label>Seguimiento inicial</label><textarea id="seguimientoInicial" placeholder="Anote el primer seguimiento o acción..."></textarea></div>
+        <div class="form-row">
+          <div><label>Lugar de institucionalización</label><textarea id="lugarInstitucionalizacion" placeholder="Ingrese lugar de institucionalización"></textarea></div>
+          <div><label>Contacto de Institucionalización</label><textarea id="contactoInstitucionalizacion" placeholder="Ingrese contacto de institucionalización"></textarea></div>
+        </div>
+
 
         <div class="form-row">
           <div><label>Estado</label>
@@ -202,6 +207,20 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    // 🔹 Funciones de formato de fecha/hora (DD/MM/AAAA y 24h)
+    function formatFechaHora(date){
+      return new Intl.DateTimeFormat("es-AR", {
+        day:"2-digit", month:"2-digit", year:"numeric",
+        hour:"2-digit", minute:"2-digit", second:"2-digit",
+        hour12:false
+      }).format(date);
+    }
+    function formatFecha(date){
+      return new Intl.DateTimeFormat("es-AR", {
+        day:"2-digit", month:"2-digit", year:"numeric"
+      }).format(date);
+    }
+
 
     // Helper DOM
     const $ = (id)=>document.getElementById(id);
@@ -239,6 +258,8 @@
     const situacionVulneracion = $('situacionVulneracion');
     const seguimientoInicial = $('seguimientoInicial');
     const estadoCaso = $('estadoCaso');
+    const lugarInstitucionalizacion = $('lugarInstitucionalizacion');
+    const contactoInstitucionalizacion = $('contactoInstitucionalizacion');
     const expedienteSelect = $('expedienteReferencia');
     const expedienteInfo = $('expedienteInfo');
 
@@ -282,7 +303,7 @@
         causasIndex[d.id] = data;
         const opt = document.createElement("option");
         opt.value = d.id;
-        opt.textContent = (data.numero || d.id) + (data.caratula ? (" · " + data.caratula) : "");
+        opt.textContent = (data.numero ? ("Causa " + data.numero) : "Expediente") + (data.caratula ? (" – " + data.caratula) : "");
         expedienteSelect.appendChild(opt);
       });
     }
@@ -296,6 +317,8 @@
         fechaNacimientoNNA: fechaNacimientoNNA.value,
         generoNNA: generoNNA.value,
         situacionVulneracion: situacionVulneracion.value,
+        lugarInstitucionalizacion: lugarInstitucionalizacion.value,
+        contactoInstitucionalizacion: contactoInstitucionalizacion.value,
         estadoCaso: estadoCaso.value,
         expedienteReferencia: expedienteSelect.value || ""
       };
@@ -304,7 +327,7 @@
         const ref = doc(db1,"casos",editandoId);
         const snap = await getDoc(ref);
         let historial = (snap.exists() && snap.data().historial) ? snap.data().historial : [];
-        historial.push({fecha:new Date().toLocaleString(), accion:"Edición del caso"});
+        historial.push({fecha:formatFechaHora(new Date()), accion:"Edición del caso"});
         await updateDoc(ref, {...data, historial});
         lastEditedId = editandoId;
         editandoId = null;
@@ -312,9 +335,9 @@
       }else{
         await addDoc(collection(db1,"casos"),{
           ...data,
-          fechaRegistro: new Date().toISOString().split("T")[0],
-          seguimientos: seguimientoInicial.value ? [{fecha:new Date().toLocaleString(), texto: seguimientoInicial.value}] : [],
-          historial: [{fecha:new Date().toLocaleString(), accion:"Creación del caso"}]
+          fechaRegistro: formatFecha(new Date()),
+          seguimientos: seguimientoInicial.value ? [{fecha:formatFechaHora(new Date()), texto: seguimientoInicial.value}] : [],
+          historial: [{fecha:formatFechaHora(new Date()), accion:"Creación del caso"}]
         });
       }
       form.reset();
@@ -345,7 +368,7 @@
     function getExpDisplay(id){
       if(!id) return "";
       const c = causasIndex[id];
-      return c ? (c.numero || id) : id;
+      return c ? (c.caratula || c.numero || "") : "";
     }
 
     function mostrarCasos(){
@@ -440,7 +463,7 @@
     window.guardarSeguimiento = async ()=>{
       if(!casoActual || !nuevoSeguimiento.value) return;
       const arr = Array.isArray(casoActual.seguimientos) ? casoActual.seguimientos : [];
-      arr.push({fecha:new Date().toLocaleString(), texto:nuevoSeguimiento.value});
+      arr.push({fecha:formatFechaHora(new Date()), texto:nuevoSeguimiento.value});
       await updateDoc(doc(db1,"casos",casoActual.id), {seguimientos:arr});
       casoActual.seguimientos = arr;
       nuevoSeguimiento.value = "";
@@ -490,6 +513,10 @@
             <div><b>Estado:</b> ${casoActual.estadoCaso||""}</div>
             <div><b>Exp. ref.:</b> ${expHtml}</div>
           </div>
+          <div class="form-row">
+            <div><b>Lugar de institucionalización:</b> ${casoActual.lugarInstitucionalizacion||""}</div>
+            <div><b>Contacto institucionalización:</b> ${casoActual.contactoInstitucionalizacion||""}</div>
+          </div>
         </div>
         <div class='section'>
           <h4>Situación</h4>
@@ -529,11 +556,12 @@
 
       $('modalExpedienteBody').innerHTML = `
         <div class='section'>
-          <p><b>Número:</b> ${data.numero||id}</p>
+          <h4>Datos del Expediente</h4>
+          <p><b>Número de Causa:</b> ${data.numero||""}</p>
           <p><b>Carátula:</b> ${data.caratula||""}</p>
-          <p><b>Fecha:</b> ${data.fecha||""}</p>
+          <p><b>Fecha de Registro:</b> ${data.fecha||""}</p>
           <p><b>Estado:</b> ${data.estado||""}</p>
-          <p><b>Detalle:</b><br>${(data.detalle||"").replace(/\n/g,"<br>")}</p>
+          <p><b>Detalle del Registro:</b><br>${(data.detalle||"").replace(/\n/g,"<br>")}</p>
         </div>
         <div class='section'>
           <h4>Seguimientos</h4>
