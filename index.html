@@ -3,97 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sistema de Protección de Personas</title>
+  <title>Sistema de Protección de Personas — SAF (Ley II N° 36)</title>
   <style>
-    :root{--brand:#004085;--bg:#f5f6f8;--card:#fff;--line:#e3e6ea;--muted:#6b7280;}
-    *{box-sizing:border-box} body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);margin:0;padding:20px}
-    .container{max-width:1300px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:10px}
-    .header{background:var(--brand);color:#fff;padding:22px;text-align:center}
-
-    /* ===== NAV SUPERIOR (BOTONES AZULES) ===== */
-    .nav-tabs{display:flex;border-bottom:1px solid var(--line);gap:8px;padding:10px}
-    .nav-tab{
-      flex:1;
-      padding:12px 16px;
-      background:#0d6efd;           /* azul */
-      color:#fff;                    /* texto blanco */
-      border:none;
-      cursor:pointer;
-      font-weight:700;               /* negrita */
-      font-size:14px;                /* 14px */
-      border-radius:8px;
-      transition:filter .15s ease, transform .02s ease;
+    :root{
+      --brand:#004085;--bg:#f5f6f8;--card:#fff;--line:#e3e6ea;--muted:#6b7280;
+      --accent:#0d6efd;--accent-dark:#0b5ed7;--ok:#198754;--warn:#ea580c;--danger:#dc3545;
     }
-    .nav-tab:hover{ filter:brightness(0.95); }
-    .nav-tab:active{ transform:translateY(1px); }
-    .nav-tab.active{
-      background:#0b5ed7;           /* azul activo un poco más oscuro */
-      color:#fff;
-      font-weight:700;
-      /* mantenemos una sutil referencia visual al activo */
-      box-shadow:inset 0 -2px 0 rgba(255,255,255,.25);
-    }
-
+    *{box-sizing:border-box} body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);margin:0;padding:20px;color:#111}
+    .container{max-width:1300px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    .nav-tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line);gap:8px;padding:10px;background:#f8fafc}
+    .nav-tab{flex:1 1 220px;padding:12px 16px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:700;font-size:14px;border-radius:10px;transition:filter .15s ease, transform .02s ease}
+    .nav-tab:hover{ filter:brightness(0.95) } .nav-tab:active{ transform:translateY(1px) }
+    .nav-tab.active{ background:var(--accent-dark); color:#fff; box-shadow:inset 0 -2px 0 rgba(255,255,255,.25) }
     .tab-content{display:none;padding:22px}.tab-content.active{display:block}
-    /* Forms */
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}.form-row.full{grid-template-columns:1fr}
+    .subgrid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
     label{display:block;margin:6px 0;font-weight:600}
-    input,select,textarea{width:100%;padding:10px;border:1px solid #cfd6de;border-radius:6px;background:#fff}
+    input,select,textarea{width:100%;padding:10px;border:1px solid #cfd6de;border-radius:8px;background:#fff}
     textarea{min-height:90px;resize:vertical}
-    .btn{padding:8px 14px;border:none;border-radius:8px;cursor:pointer;font-weight:600}
+    .small{font-size:.85rem;color:var(--muted)}
+    .fieldset{border:1px dashed var(--line);border-radius:12px;padding:14px;margin:12px 0;background:#fff}
+    .fieldset legend{padding:0 6px;color:var(--brand);font-weight:700}
+    .chips{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+    .chip{padding:4px 10px;border:1px solid var(--line);border-radius:999px;font-size:.85rem;background:#fff}
+    .btn{padding:9px 14px;border:none;border-radius:10px;cursor:pointer;font-weight:700}
     .btn-primary{background:var(--brand);color:#fff}.btn-secondary{background:#6c757d;color:#fff}
-    .btn-danger{background:#dc3545;color:#fff}.btn-ghost{background:#fff;border:1px solid var(--line);color:#111}
-    /* Table */
+    .btn-danger{background:var(--danger);color:#fff}.btn-ghost{background:#fff;border:1px solid var(--line);color:#111}
+    .inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
     .cases-table{width:100%;border-collapse:collapse;margin-top:14px}
     .cases-table th,.cases-table td{padding:10px;border-bottom:1px solid var(--line)}.cases-table th{background:var(--brand);color:#fff}
     .actions{display:flex;gap:6px;flex-wrap:wrap}
-    .status-abierto{color:green;font-weight:bold}
-    .status-en{color:blue;font-weight:bold}
-    .status-cerrado{color:red;font-weight:bold}
-    /* Highlight edited row */
+    .status-abierto{color:var(--ok);font-weight:bold}.status-en{color:#0ea5e9;font-weight:bold}.status-cerrado{color:var(--danger);font-weight:bold}
     .row-highlight{animation:hilite 2.2s ease-in-out 1; background:#fff9c4 !important}
     @keyframes hilite{0%{background:#fff9c4} 100%{background:transparent}}
-    /* Panel inicio */
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .section{border:1px solid var(--line);border-radius:8px;padding:12px;background:#fff}
-    /* Sidebar Seguimiento */
+    .section{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
     #sidebarSeguimiento{position:fixed;top:0;right:-460px;width:460px;height:100%;background:#fff;box-shadow:-2px 0 14px rgba(0,0,0,.15);transition:right .28s;z-index:1200;display:flex;flex-direction:column}
     #sidebarSeguimiento.active{right:0}
     #sidebarSeguimiento .s-header{background:var(--brand);color:#fff;padding:14px;display:flex;justify-content:space-between;align-items:center}
     #sidebarSeguimiento .s-body{padding:16px;overflow:auto;flex:1}
     .timeline-item{border-left:3px solid var(--brand);margin-left:10px;padding-left:12px;margin-bottom:12px;position:relative}
-    .timeline-item .date{font-size:.82rem;color:var(--muted)}.timeline-item .delete-btn{position:absolute;right:0;top:0;background:none;border:none;color:#dc3545;cursor:pointer}
+    .timeline-item .date{font-size:.82rem;color:var(--muted)}.timeline-item .delete-btn{position:absolute;right:0;top:0;background:none;border:none;color:var(--danger);cursor:pointer}
     .seguimiento-form{border-top:1px solid var(--line);padding:14px;background:#fafbfc}
-    /* Modal */
     .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1300;align-items:center;justify-content:center;padding:20px}
-    .modal.open{display:flex}.modal-card{width:min(920px,96vw);max-height:88vh;background:#fff;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
-    .modal-head{background:var(--brand);color:#fff;padding:14px;display:flex;justify-content:space-between}
+    .modal.open{display:flex}.modal-card{width:min(980px,96vw);max-height:88vh;background:#fff;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+    .modal-head{background:var(--brand);color:#fff;padding:14px;display:flex;justify-content:space-between;align-items:center}
     .modal-body{padding:18px;overflow:auto}
     .print-actions{padding:12px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line)}
-    /* Filtros */
     .filters{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
-    .filters input,.filters select{padding:8px;border-radius:6px;border:1px solid var(--line)}
-    a.link{color:#0d6efd;text-decoration:none} a.link:hover{text-decoration:underline}
-  
-    /* 🔽 Responsividad para tablets y móviles */
-    @media (max-width: 1024px) {
-      .grid-2 { grid-template-columns: 1fr; }
-      .form-row { grid-template-columns: 1fr; }
-      .nav-tabs { flex-wrap: wrap; }
-      .nav-tab { flex: 1 1 100%; text-align: center; }
-      .cases-table th, .cases-table td { font-size: 0.9rem; padding: 6px; }
-    }
-    @media (max-width: 600px) {
-      body { padding: 8px; }
-      .container { padding: 10px; border-radius: 6px; }
-      h1, h2, h3, h4 { font-size: 1rem; }
-      .btn { padding: 6px 10px; font-size: 0.85rem; }
-      .actions { flex-direction: column; gap: 4px; }
-      .cases-table { display: block; overflow-x: auto; }
-      #sidebarSeguimiento { width: 100%; }
-      .modal-card { width: 100%; height: 95vh; border-radius: 0; }
-    }
-
+    .filters input,.filters select{padding:8px;border-radius:8px;border:1px solid var(--line)}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:.8rem;border:1px solid var(--line);background:#fff}
+    .badge-ok{color:var(--ok);border-color:var(--ok)} .badge-warn{color:var(--warn);border-color:var(--warn)}
+    .badge-danger{color:var(--danger);border-color:var(--danger)}
+    @media (max-width: 1024px) {.grid-2 { grid-template-columns: 1fr } .form-row { grid-template-columns: 1fr } .nav-tab { flex:1 1 100%; text-align:center } .cases-table th, .cases-table td { font-size:.9rem; padding:6px }}
+    @media (max-width: 600px) {body { padding: 8px } .container { border-radius: 10px } h1, h2, h3, h4 { font-size: 1rem } .btn { padding: 8px 10px; font-size: .9rem } .actions { flex-direction: column; gap: 4px } .cases-table { display:block; overflow-x:auto } #sidebarSeguimiento { width: 100% } .modal-card { width:100%; height:95vh; border-radius:0 }}
   </style>
 </head>
 <body>
@@ -107,7 +70,7 @@
     <!-- Panel de Inicio -->
     <div id="inicio" class="tab-content active">
       <h2>Panel de Inicio</h2>
-      <p style="color:#555;font-size:.95rem;background:#fff3cd;padding:10px;border-radius:8px">
+      <p class="small" style="background:#fff3cd;padding:10px;border-radius:10px">
         ℹ️ <b>Ayuda:</b> Use las pestañas superiores para registrar nuevos casos, ver el listado o gestionar seguimientos.
       </p>
       <div class="grid-2">
@@ -117,8 +80,9 @@
           <p class="status-abierto">Abiertos: <strong id="casosAbiertos">0</strong></p>
           <p class="status-en">En Proceso: <strong id="casosProceso">0</strong></p>
           <p class="status-cerrado">Cerrados: <strong id="casosCerrados">0</strong></p>
-          <div style="margin-top:8px">
+          <div style="margin-top:8px" class="inline">
             <button class="btn btn-primary" onclick="imprimirSeccion('inicio')">Imprimir Panel</button>
+            <button class="btn btn-ghost" onclick="exportarJSON()">Exportar JSON</button>
           </div>
         </div>
         <div class="section" id="inicioRight">
@@ -132,49 +96,167 @@
     <div id="registro" class="tab-content">
       <h2 id="formTitle">Nuevo Caso</h2>
       <form id="casoForm">
-        <div class="form-row">
-          <div><label>Nombre *</label><input id="nombreNNA" required></div>
-          <div><label>DNI</label><input id="dniNNA"></div>
-        </div>
-        <div class="form-row">
-          <div><label>Fecha nac.</label><input type="date" id="fechaNacimientoNNA"></div>
-          <div><label>Género</label>
-            <select id="generoNNA"><option></option><option>Masculino</option><option>Femenino</option><option>Otro</option></select>
+        <!-- Datos del NNA -->
+        <fieldset class="fieldset">
+          <legend>Datos del NNA</legend>
+          <div class="form-row">
+            <div><label>Nombre *</label><input id="nombreNNA" required></div>
+            <div><label>DNI</label><input id="dniNNA"></div>
           </div>
-        </div>
-        <div class="form-row full"><label>Situación</label><textarea id="situacionVulneracion"></textarea></div>
+          <div class="form-row">
+            <div><label>Fecha nac.</label><input type="date" id="fechaNacimientoNNA"></div>
+            <div><label>Género</label>
+              <select id="generoNNA"><option></option><option>Masculino</option><option>Femenino</option><option>Otro</option></select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div><label>Centro de vida (localidad/prov.)</label><input id="centroVida"></div>
+            <div><label>Vínculos fraternos preservados</label>
+              <select id="vinculosFraternos"><option value=""></option><option>Sí</option><option>No</option></select>
+            </div>
+          </div>
+          <div class="form-row full"><label>Situación</label><textarea id="situacionVulneracion"></textarea></div>
+          <div class="small inline">
+            <span id="edadNNAInfo" class="badge">Edad NNA: —</span>
+          </div>
+        </fieldset>
 
-        <div class="form-row full">
-          <label>Expediente de referencia</label>
-          <select id="expedienteReferencia"><option value="">-- Seleccione --</option></select>
-          <small id="expedienteInfo" style="color:#666"></small>
-        </div>
+        <!-- Medida y Acogimiento (Ley II N° 36) -->
+        <fieldset class="fieldset">
+          <legend>Medida y Acogimiento (Ley II N° 36)</legend>
+          <div class="form-row">
+            <div><label>Tipo de medida excepcional</label>
+              <select id="tipoMedida"><option value=""></option><option>Administrativa con intervención judicial</option><option>Judicial</option></select>
+            </div>
+            <div><label>Autoridad interviniente</label><input id="autoridadInterviniente" placeholder="Órgano/juzgado/área"></div>
+          </div>
+          <div class="form-row">
+            <div><label>Fecha de la medida</label><input type="date" id="fechaMedida"></div>
+            <div><label>Fecha de ingreso al SAF</label><input type="date" id="fechaIngresoSAF"></div>
+          </div>
+          <div class="form-row">
+            <div><label>Tipo de familia de acogimiento</label>
+              <select id="tipoFamilia"><option value=""></option><option>Alternativa</option><option>Inmediata (≤ 10 días)</option></select>
+            </div>
+            <div><label>RUFAAFA (N° registro)</label><input id="rufAAFA"></div>
+          </div>
 
-        <div class="form-row full"><label>Seguimiento inicial</label><textarea id="seguimientoInicial" placeholder="Anote el primer seguimiento o acción..."></textarea></div>
+          <div class="form-row">
+            <div><label>Referente de familia de acogimiento</label><input id="faNombre" placeholder="Nombre y apellido"></div>
+            <div><label>DNI referente</label><input id="faDni" placeholder="Documento"></div>
+          </div>
+          <div class="form-row">
+            <div><label>Fecha nac. referente</label><input type="date" id="faFechaNac"></div>
+            <div><label>Contacto (tel/correo)</label><input id="faContacto"></div>
+          </div>
+          <div class="form-row">
+            <div><label>Domicilio familia de acogimiento</label><input id="faDomicilio"></div>
+            <div><label>Años de residencia en Misiones</label><input type="number" min="0" step="1" id="faResidenciaAnos" placeholder="Ej: 3"></div>
+          </div>
+
+          <div class="small inline">
+            <span id="edadFAInfo" class="badge">Edad referente: —</span>
+            <span id="difEdadInfo" class="badge">Diferencia con NNA: —</span>
+            <span id="residenciaInfo" class="badge">Residencia: —</span>
+          </div>
+
+          <div class="form-row full">
+            <label>Etapa del proceso (Art. 14)</label>
+            <div class="chips">
+              <label class="chip"><input type="checkbox" id="etapaConvocatoria"> Convocatoria</label>
+              <label class="chip"><input type="checkbox" id="etapaEvaluacion"> Evaluación y selección</label>
+              <label class="chip"><input type="checkbox" id="etapaCapacitacion"> Capacitación</label>
+              <label class="chip"><input type="checkbox" id="etapaInscripcion"> Inscripción RUFAAFA</label>
+              <label class="chip"><input type="checkbox" id="etapaPlan"> Plan de intervención</label>
+            </div>
+          </div>
+
+          <div class="form-row full">
+            <label>Plan de intervención</label>
+            <textarea id="planIntervencion" placeholder="Objetivos, acciones, roles (Art.14.5)"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div><label>Egreso (si aplica)</label>
+              <select id="causalEgreso">
+                <option value=""></option>
+                <option>Revinculación con familia de origen</option>
+                <option>Vinculación con familia extensa</option>
+                <option>Adoptabilidad y guarda con fines de adopción</option>
+                <option>Mayoría de edad</option>
+              </select>
+            </div>
+            <div><label>Fecha de egreso</label><input type="date" id="fechaEgreso"></div>
+          </div>
+
+          <div class="form-row full">
+            <label>Observaciones sobre derecho a ser oído / identidad / integridad</label>
+            <textarea id="obsDerechos" placeholder="Registro de escucha activa, identidad y resguardo (Art. 4)"></textarea>
+          </div>
+        </fieldset>
+
+        <!-- Requisitos RUFAAFA (Art. 18) -->
+        <fieldset class="fieldset">
+          <legend>Requisitos RUFAAFA (Art. 18)</legend>
+          <div class="subgrid-3">
+            <label class="chip"><input type="checkbox" id="reqDomicilio"> Domicilio en Misiones (≥ 2 años)</label>
+            <label class="chip"><input type="checkbox" id="reqEdad"> Mayor de 25 años</label>
+            <label class="chip"><input type="checkbox" id="reqDiferenciaEdad"> Diferencia ≥ 15 años con el NNA</label>
+            <label class="chip"><input type="checkbox" id="reqPenales"> Cert. antecedentes penales</label>
+            <label class="chip"><input type="checkbox" id="reqAlimentaria"> Libre deuda alimentaria</label>
+            <label class="chip"><input type="checkbox" id="reqPsicofisico"> Aptitud psicofísica (sector público)</label>
+            <label class="chip"><input type="checkbox" id="reqIngresos"> Constancia/ DDJJ de ingresos</label>
+            <label class="chip"><input type="checkbox" id="reqVivienda"> Acredita vivienda (propia/locación)</label>
+            <label class="chip"><input type="checkbox" id="reqCapacitacion"> Capacitaciones realizadas</label>
+            <label class="chip"><input type="checkbox" id="reqAcuerdo"> Acuerdo de aceptación firmado</label>
+          </div>
+        </fieldset>
+
+        <!-- Inhabilidades (Art. 19) -->
+        <fieldset class="fieldset">
+          <legend>Inhabilidades (Art. 19)</legend>
+          <div class="subgrid-3">
+            <label class="chip"><input type="checkbox" id="inhDelitos"> Sin condena por delitos dolosos</label>
+            <label class="chip"><input type="checkbox" id="inhMedidas"> Sin medidas cautelares vigentes (L. XIV-6 / IV-68)</label>
+            <label class="chip"><input type="checkbox" id="inhRespParental"> Sin privación/suspensión de resp. parental</label>
+            <label class="chip"><input type="checkbox" id="inhTutela"> Sin remoción de tutela por mal desempeño</label>
+          </div>
+        </fieldset>
+
         <div class="form-row">
-          <div><label>Lugar de institucionalización</label><textarea id="lugarInstitucionalizacion" placeholder="Ingrese lugar de institucionalización"></textarea></div>
-          <div><label>Contacto de Institucionalización</label><textarea id="contactoInstitucionalizacion" placeholder="Ingrese contacto de institucionalización"></textarea></div>
-        </div>
-
-
-        <div class="form-row">
+          <div><label>Expediente de referencia</label>
+            <select id="expedienteReferencia"><option value="">-- Seleccione --</option></select>
+            <small id="expedienteInfo" class="small"></small>
+          </div>
           <div><label>Estado</label>
             <select id="estadoCaso"><option>Abierto</option><option>En Proceso</option><option>Cerrado</option></select>
           </div>
-          <div style="display:flex;align-items:flex-end;gap:8px">
+        </div>
+
+        <div class="form-row full"><label>Seguimiento inicial</label><textarea id="seguimientoInicial" placeholder="Anote el primer seguimiento o acción..."></textarea></div>
+
+        <div class="form-row">
+          <div><label>Lugar de institucionalización</label><textarea id="lugarInstitucionalizacion" placeholder="Si corresponde"></textarea></div>
+          <div><label>Contacto institucionalización</label><textarea id="contactoInstitucionalizacion" placeholder="Si corresponde"></textarea></div>
+        </div>
+
+        <div class="form-row">
+          <div class="inline">
             <button type="submit" class="btn btn-primary">Guardar</button>
             <button type="button" class="btn btn-secondary" onclick="imprimirSeccion('registro')">Imprimir</button>
           </div>
         </div>
       </form>
+      <p id="validacionMsg" class="small"></p>
     </div>
 
     <!-- Casos -->
     <div id="casos" class="tab-content">
       <div style="display:flex;align-items:center;gap:10px;justify-content:space-between">
         <h2>Casos Registrados</h2>
-        <div>
+        <div class="inline">
           <button class="btn btn-primary" onclick="imprimirSeccion('casos')">Imprimir listado</button>
+          <button class="btn btn-ghost" onclick="exportarJSON()">Exportar JSON</button>
         </div>
       </div>
       <div class="filters">
@@ -190,7 +272,7 @@
   <!-- Sidebar Seguimiento -->
   <aside id="sidebarSeguimiento">
     <div class="s-header"><span id="sidebarTitle"></span>
-      <div>
+      <div class="inline">
         <button class="btn btn-secondary" onclick="imprimirSeccion('sidebarSeguimiento')">Imprimir</button>
         <button class="btn btn-danger" onclick="cerrarSidebar()">✕</button>
       </div>
@@ -202,10 +284,10 @@
     </div>
   </aside>
 
-  <!-- Modal Caso (resumen completo del caso) -->
+  <!-- Modal Caso -->
   <div id="modalCaso" class="modal"><div class="modal-card">
     <div class="modal-head"><h3>Detalle del Caso</h3>
-      <div>
+      <div class="inline">
         <button class="btn btn-secondary" onclick="imprimirSeccion('modalCasoBody')">Imprimir</button>
         <button class="btn btn-danger" onclick="cerrarModalCaso()">✕</button>
       </div></div>
@@ -215,10 +297,10 @@
     </div>
   </div></div>
 
-  <!-- Modal Expediente (causas) -->
+  <!-- Modal Expediente -->
   <div id="modalExpediente" class="modal"><div class="modal-card">
     <div class="modal-head"><h3>Detalle de Expediente</h3>
-      <div>
+      <div class="inline">
         <button class="btn btn-secondary" onclick="imprimirSeccion('modalExpedienteBody')">Imprimir</button>
         <button class="btn btn-danger" onclick="cerrarModalExpediente()">✕</button>
       </div>
@@ -229,83 +311,49 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    // 🔹 Funciones de formato de fecha/hora (DD/MM/AAAA y 24h)
+
     function formatFechaHora(date){
-      return new Intl.DateTimeFormat("es-AR", {
-        day:"2-digit", month:"2-digit", year:"numeric",
-        hour:"2-digit", minute:"2-digit", second:"2-digit",
-        hour12:false
-      }).format(date);
+      return new Intl.DateTimeFormat("es-AR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(date);
     }
     function formatFecha(date){
-      return new Intl.DateTimeFormat("es-AR", {
-        day:"2-digit", month:"2-digit", year:"numeric"
-      }).format(date);
+      return new Intl.DateTimeFormat("es-AR",{day:"2-digit",month:"2-digit",year:"numeric"}).format(date);
     }
-
-
-    // Helper DOM
     const $ = (id)=>document.getElementById(id);
 
     // Firebase App 1: proteccion-personas (casos)
-    const app1 = initializeApp({
-      apiKey:"AIzaSyAWlsFqN09y_DAAIKLLIjGjjyR2_rKJIFs",
-      authDomain:"proteccion-personas.firebaseapp.com",
-      projectId:"proteccion-personas"
-    }, "app1");
+    const app1 = initializeApp({apiKey:"AIzaSyAWlsFqN09y_DAAIKLLIjGjjyR2_rKJIFs",authDomain:"proteccion-personas.firebaseapp.com",projectId:"proteccion-personas"},"app1");
     const db1 = getFirestore(app1);
-
     // Firebase App 2: causas-defensoria (causas)
-    const app2 = initializeApp({
-      apiKey:"AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
-      authDomain:"causas-defensoria.firebaseapp.com",
-      projectId:"causas-defensoria",
-      storageBucket:"causas-defensoria.firebasestorage.app",
-      messagingSenderId:"186064671470",
-      appId:"1:186064671470:web:b58bae5eadbe6e469f19ff"
-    }, "app2");
+    const app2 = initializeApp({apiKey:"AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",authDomain:"causas-defensoria.firebaseapp.com",projectId:"causas-defensoria",storageBucket:"causas-defensoria.firebasestorage.app",messagingSenderId:"186064671470",appId:"1:186064671470:web:b58bae5eadbe6e469f19ff"},"app2");
     const db2 = getFirestore(app2);
 
     // Estado
     let casos=[], casosFiltrados=[], casoActual=null, editandoId=null, lastEditedId=null;
-    let causasIndex = {}; // id -> data (numero, caratula, ...)
+    let causasIndex = {};
 
-    // Refs formulario/DOM
-    const form = $('casoForm');
-    const formTitle = $('formTitle');
-    const nombreNNA = $('nombreNNA');
-    const dniNNA = $('dniNNA');
-    const fechaNacimientoNNA = $('fechaNacimientoNNA');
-    const generoNNA = $('generoNNA');
-    const situacionVulneracion = $('situacionVulneracion');
-    const seguimientoInicial = $('seguimientoInicial');
-    const estadoCaso = $('estadoCaso');
-    const lugarInstitucionalizacion = $('lugarInstitucionalizacion');
-    const contactoInstitucionalizacion = $('contactoInstitucionalizacion');
-    const expedienteSelect = $('expedienteReferencia');
-    const expedienteInfo = $('expedienteInfo');
-
-    const searchInput = $('searchInput');
-    const estadoFilter = $('estadoFilter');
-    const tablaCasos = $('tablaCasos');
-
-    const totalCasos = $('totalCasos');
-    const casosAbiertos = $('casosAbiertos');
-    const casosProceso = $('casosProceso');
-    const casosCerrados = $('casosCerrados');
-    const listaTramite = $('listaTramite');
-
-    const sidebarSeguimiento = $('sidebarSeguimiento');
-    const sidebarTitle = $('sidebarTitle');
-    const timeline = $('timeline');
-    const nuevoSeguimiento = $('nuevoSeguimiento');
-
-    const modalCaso = $('modalCaso');
-    const modalCasoBody = $('modalCasoBody');
+    // Refs
+    const form=$('casoForm'), formTitle=$('formTitle');
+    const nombreNNA=$('nombreNNA'), dniNNA=$('dniNNA'), fechaNacimientoNNA=$('fechaNacimientoNNA'), generoNNA=$('generoNNA'),
+          centroVida=$('centroVida'), vinculosFraternos=$('vinculosFraternos'), situacionVulneracion=$('situacionVulneracion');
+    const tipoMedida=$('tipoMedida'), autoridadInterviniente=$('autoridadInterviniente'), fechaMedida=$('fechaMedida'), fechaIngresoSAF=$('fechaIngresoSAF'), tipoFamilia=$('tipoFamilia'), rufAAFA=$('rufAAFA');
+    const faNombre=$('faNombre'), faDni=$('faDni'), faFechaNac=$('faFechaNac'), faDomicilio=$('faDomicilio'), faContacto=$('faContacto'), faResidenciaAnos=$('faResidenciaAnos');
+    const edadNNAInfo=$('edadNNAInfo'), edadFAInfo=$('edadFAInfo'), difEdadInfo=$('difEdadInfo'), residenciaInfo=$('residenciaInfo');
+    const etapaConvocatoria=$('etapaConvocatoria'), etapaEvaluacion=$('etapaEvaluacion'), etapaCapacitacion=$('etapaCapacitacion'), etapaInscripcion=$('etapaInscripcion'), etapaPlan=$('etapaPlan'), planIntervencion=$('planIntervencion');
+    const causalEgreso=$('causalEgreso'), fechaEgreso=$('fechaEgreso'), obsDerechos=$('obsDerechos');
+    const reqDomicilio=$('reqDomicilio'), reqEdad=$('reqEdad'), reqDiferenciaEdad=$('reqDiferenciaEdad'), reqPenales=$('reqPenales'), reqAlimentaria=$('reqAlimentaria'), reqPsicofisico=$('reqPsicofisico'), reqIngresos=$('reqIngresos'), reqVivienda=$('reqVivienda'), reqCapacitacion=$('reqCapacitacion'), reqAcuerdo=$('reqAcuerdo');
+    const inhDelitos=$('inhDelitos'), inhMedidas=$('inhMedidas'), inhRespParental=$('inhRespParental'), inhTutela=$('inhTutela');
+    const seguimientoInicial=$('seguimientoInicial'), estadoCaso=$('estadoCaso'), lugarInstitucionalizacion=$('lugarInstitucionalizacion'), contactoInstitucionalizacion=$('contactoInstitucionalizacion');
+    const expedienteSelect=$('expedienteReferencia'), expedienteInfo=$('expedienteInfo');
+    const searchInput=$('searchInput'), estadoFilter=$('estadoFilter'), tablaCasos=$('tablaCasos');
+    const totalCasos=$('totalCasos'), casosAbiertos=$('casosAbiertos'), casosProceso=$('casosProceso'), casosCerrados=$('casosCerrados'), listaTramite=$('listaTramite');
+    const sidebarSeguimiento=$('sidebarSeguimiento'), sidebarTitle=$('sidebarTitle'), timeline=$('timeline'), nuevoSeguimiento=$('nuevoSeguimiento');
+    const modalCaso=$('modalCaso'), modalCasoBody=$('modalCasoBody');
+    const validacionMsg=$('validacionMsg');
 
     // Eventos
     document.addEventListener("DOMContentLoaded", async ()=>{
       await Promise.all([cargarExpedientes(), cargarCasos()]);
+      [fechaNacimientoNNA, faFechaNac, faResidenciaAnos].forEach(el=> el.addEventListener('input', actualizarAutoChecks));
     });
     form.addEventListener("submit", guardarCaso);
     expedienteSelect.addEventListener("change", ()=>{
@@ -315,7 +363,57 @@
       expedienteInfo.textContent = c ? `Seleccionado: ${c.numero || id} — ${c.caratula || ''}` : "";
     });
 
-    // Cargar expedientes (causas) y armar índice
+    // Utilidades
+    function calcEdad(dateStr){
+      if(!dateStr) return null;
+      const d=new Date(dateStr), t=new Date();
+      let e=t.getFullYear()-d.getFullYear();
+      const m=t.getMonth()-d.getMonth();
+      if(m<0 || (m===0 && t.getDate()<d.getDate())) e--;
+      return e>=0?e:null;
+    }
+    function setBadge(el, text, level=""){
+      el.textContent = text;
+      el.classList.remove("badge-ok","badge-warn","badge-danger");
+      if(level) el.classList.add(level);
+    }
+    function actualizarAutoChecks(){
+      const edadNNA = calcEdad(fechaNacimientoNNA.value);
+      const edadFA  = calcEdad(faFechaNac.value);
+      if(edadNNA!=null) setBadge(edadNNAInfo, `Edad NNA: ${edadNNA} años`, "badge-ok"); else setBadge(edadNNAInfo, "Edad NNA: —");
+      if(edadFA!=null)  setBadge(edadFAInfo, `Edad referente: ${edadFA} años`, edadFA>=25?"badge-ok":"badge-danger"); else setBadge(edadFAInfo, "Edad referente: —");
+
+      // Mayor de 25
+      if(edadFA!=null){ reqEdad.checked = edadFA>=25; }
+
+      // Diferencia ≥ 15
+      if(edadFA!=null && edadNNA!=null){
+        const diff = edadFA - edadNNA;
+        const ok = diff>=15;
+        reqDiferenciaEdad.checked = ok;
+        setBadge(difEdadInfo, `Diferencia con NNA: ${diff} años`, ok?"badge-ok":"badge-danger");
+      }else{
+        setBadge(difEdadInfo, "Diferencia con NNA: —");
+      }
+
+      // Residencia en Misiones (≥2 años)
+      const anos = parseInt(faResidenciaAnos.value,10);
+      if(!isNaN(anos)){
+        reqDomicilio.checked = anos>=2;
+        setBadge(residenciaInfo, `Residencia: ${anos} años`, anos>=2?"badge-ok":"badge-warn");
+      }else{
+        setBadge(residenciaInfo, "Residencia: —");
+      }
+
+      // Mensaje resumen
+      const faltas = [];
+      if(edadFA!=null && edadFA<25) faltas.push("El referente debe ser ≥ 25 años.");
+      if(edadFA!=null && edadNNA!=null && (edadFA-edadNNA)<15) faltas.push("La diferencia de edad con el NNA debe ser ≥ 15 años.");
+      if(!isNaN(anos) && anos<2) faltas.push("Residencia en Misiones debe ser ≥ 2 años.");
+      validacionMsg.textContent = faltas.length? "⚠️ " + faltas.join(" ") : "";
+    }
+
+    // Cargar expedientes
     async function cargarExpedientes(){
       expedienteSelect.innerHTML = "<option value=''>-- Seleccione --</option>";
       causasIndex = {};
@@ -333,16 +431,78 @@
     // Guardar/Actualizar caso
     async function guardarCaso(e){
       e.preventDefault();
+      // Validaciones automáticas obligatorias (Arts. 18 y concordantes)
+      const edadN = calcEdad(fechaNacimientoNNA.value);
+      const edadF = calcEdad(faFechaNac.value);
+      const anosRes = parseInt(faResidenciaAnos.value,10);
+
+      if(edadF!=null && edadF<25){
+        alert("No se puede guardar: el referente debe tener 25 años o más (Art. 18).");
+        return;
+      }
+      if(edadN!=null && edadF!=null && (edadF-edadN)<15){
+        alert("No se puede guardar: la diferencia entre el referente y el NNA debe ser de 15 años o más (Art. 18).");
+        return;
+      }
+      if(!isNaN(anosRes) && anosRes<2){
+        alert("No se puede guardar: la residencia en Misiones debe ser de 2 años o más (Art. 18).");
+        return;
+      }
+
+      const etapas = {
+        convocatoria: !!etapaConvocatoria.checked,
+        evaluacion: !!etapaEvaluacion.checked,
+        capacitacion: !!etapaCapacitacion.checked,
+        inscripcion: !!etapaInscripcion.checked,
+        plan: !!etapaPlan.checked
+      };
+      const requisitos = {
+        reqDomicilio: !!reqDomicilio.checked,
+        reqEdad: !!reqEdad.checked,
+        reqDiferenciaEdad: !!reqDiferenciaEdad.checked,
+        reqPenales: !!reqPenales.checked,
+        reqAlimentaria: !!reqAlimentaria.checked,
+        reqPsicofisico: !!reqPsicofisico.checked,
+        reqIngresos: !!reqIngresos.checked,
+        reqVivienda: !!reqVivienda.checked,
+        reqCapacitacion: !!reqCapacitacion.checked,
+        reqAcuerdo: !!reqAcuerdo.checked
+      };
+      const inhabilidades = {
+        inhDelitos: !!inhDelitos.checked,
+        inhMedidas: !!inhMedidas.checked,
+        inhRespParental: !!inhRespParental.checked,
+        inhTutela: !!inhTutela.checked
+      };
+
       const data = {
         nombreNNA: nombreNNA.value,
         dniNNA: dniNNA.value,
         fechaNacimientoNNA: fechaNacimientoNNA.value,
         generoNNA: generoNNA.value,
+        centroVida: centroVida.value,
+        vinculosFraternos: vinculosFraternos.value,
         situacionVulneracion: situacionVulneracion.value,
-        lugarInstitucionalizacion: lugarInstitucionalizacion.value,
-        contactoInstitucionalizacion: contactoInstitucionalizacion.value,
+        tipoMedida: tipoMedida.value,
+        autoridadInterviniente: autoridadInterviniente.value,
+        fechaMedida: fechaMedida.value,
+        fechaIngresoSAF: fechaIngresoSAF.value,
+        tipoFamilia: tipoFamilia.value,
+        rufAAFA: rufAAFA.value,
+        faNombre: faNombre.value,
+        faDni: faDni.value,
+        faFechaNac: faFechaNac.value,
+        faDomicilio: faDomicilio.value,
+        faContacto: faContacto.value,
+        faResidenciaAnos: faResidenciaAnos.value,
+        etapas, planIntervencion: planIntervencion.value,
+        causalEgreso: causalEgreso.value, fechaEgreso: fechaEgreso.value,
+        obsDerechos: obsDerechos.value,
+        requisitos, inhabilidades,
         estadoCaso: estadoCaso.value,
-        expedienteReferencia: expedienteSelect.value || ""
+        expedienteReferencia: expedienteSelect.value || "",
+        lugarInstitucionalizacion: lugarInstitucionalizacion.value,
+        contactoInstitucionalizacion: contactoInstitucionalizacion.value
       };
 
       if(editandoId){
@@ -364,6 +524,7 @@
       }
       form.reset();
       expedienteInfo.textContent = "";
+      actualizarAutoChecks();
       await cargarCasos();
       showTab('casos');
     }
@@ -395,17 +556,17 @@
 
     function mostrarCasos(){
       if(!casosFiltrados.length){ tablaCasos.innerHTML="<p>Sin casos</p>"; return; }
-      let h = "<table class='cases-table'><tr><th></th><th>Nombre</th><th>Estado</th><th>Expediente</th><th>Acciones</th></tr>";
+      let h = "<table class='cases-table'><tr><th></th><th>Nombre</th><th>Estado</th><th>SAF</th><th>Expediente</th><th>Acciones</th></tr>";
       for(const c of casosFiltrados){
         const cls = c.estadoCaso==="Abierto" ? "status-abierto" : (c.estadoCaso==="Cerrado" ? "status-cerrado" : "status-en");
         const expTxt = c.expedienteReferencia ? getExpDisplay(c.expedienteReferencia) : "";
-        const expHtml = c.expedienteReferencia
-          ? `<a class="link" href="#" onclick="verExpediente('${c.expedienteReferencia}')">${expTxt}</a>`
-          : "";
+        const expHtml = c.expedienteReferencia ? `<a class="link" href="#" onclick="verExpediente('${c.expedienteReferencia}')">${expTxt}</a>` : "";
+        const safBadge = c.tipoFamilia ? `<span class="chip">${c.tipoFamilia}</span>` : "";
         h += `<tr id="row-${c.id}">
                 <td><input type="checkbox" onchange="toggleSidebar('${c.id}',this.checked)"></td>
                 <td>${c.nombreNNA||""}</td>
                 <td class="${cls}">${c.estadoCaso||""}</td>
+                <td>${safBadge}</td>
                 <td>${expHtml}</td>
                 <td class="actions">
                   <button class="btn btn-ghost" onclick="editarCaso('${c.id}')">Editar</button>
@@ -436,25 +597,54 @@
       casos.filter(c=>c.estadoCaso==="En Proceso").forEach(c=>{
         const li=document.createElement("li");
         const expTxt = c.expedienteReferencia ? getExpDisplay(c.expedienteReferencia) : "-";
-        li.innerHTML = `<b>${c.nombreNNA||"Sin nombre"}</b> · Exp: ${expTxt}`;
+        li.innerHTML = `<b>${c.nombreNNA||"Sin nombre"}</b> · Exp: ${expTxt} ` + (c.tipoFamilia? `· <i>${c.tipoFamilia}</i>`:"");
         listaTramite.appendChild(li);
       });
     }
 
     // Editar
     window.editarCaso = (id)=>{
-      const c = casos.find(x=>x.id===id);
-      if(!c) return;
-      editandoId = id;
-      formTitle.textContent = "Editar Caso";
-      nombreNNA.value = c.nombreNNA || "";
-      dniNNA.value = c.dniNNA || "";
-      fechaNacimientoNNA.value = c.fechaNacimientoNNA || "";
-      generoNNA.value = c.generoNNA || "";
+      const c = casos.find(x=>x.id===id); if(!c) return;
+      editandoId = id; formTitle.textContent = "Editar Caso";
+      nombreNNA.value = c.nombreNNA || ""; dniNNA.value = c.dniNNA || "";
+      fechaNacimientoNNA.value = c.fechaNacimientoNNA || ""; generoNNA.value = c.generoNNA || "";
+      centroVida.value = c.centroVida || ""; vinculosFraternos.value = c.vinculosFraternos || "";
       situacionVulneracion.value = c.situacionVulneracion || "";
+      tipoMedida.value = c.tipoMedida || ""; autoridadInterviniente.value = c.autoridadInterviniente || "";
+      fechaMedida.value = c.fechaMedida || ""; fechaIngresoSAF.value = c.fechaIngresoSAF || "";
+      tipoFamilia.value = c.tipoFamilia || ""; rufAAFA.value = c.rufAAFA || "";
+      faNombre.value = c.faNombre || ""; faDni.value = c.faDni || ""; faFechaNac.value = c.faFechaNac || "";
+      faDomicilio.value = c.faDomicilio || ""; faContacto.value = c.faContacto || "";
+      faResidenciaAnos.value = c.faResidenciaAnos || "";
+      etapaConvocatoria.checked = !!(c.etapas?.convocatoria);
+      etapaEvaluacion.checked = !!(c.etapas?.evaluacion);
+      etapaCapacitacion.checked = !!(c.etapas?.capacitacion);
+      etapaInscripcion.checked = !!(c.etapas?.inscripcion);
+      etapaPlan.checked = !!(c.etapas?.plan);
+      planIntervencion.value = c.planIntervencion || "";
+      causalEgreso.value = c.causalEgreso || ""; fechaEgreso.value = c.fechaEgreso || "";
+      obsDerechos.value = c.obsDerechos || "";
+      // Requisitos/Inhabilidades
+      reqDomicilio.checked = !!(c.requisitos?.reqDomicilio);
+      reqEdad.checked = !!(c.requisitos?.reqEdad);
+      reqDiferenciaEdad.checked = !!(c.requisitos?.reqDiferenciaEdad);
+      reqPenales.checked = !!(c.requisitos?.reqPenales);
+      reqAlimentaria.checked = !!(c.requisitos?.reqAlimentaria);
+      reqPsicofisico.checked = !!(c.requisitos?.reqPsicofisico);
+      reqIngresos.checked = !!(c.requisitos?.reqIngresos);
+      reqVivienda.checked = !!(c.requisitos?.reqVivienda);
+      reqCapacitacion.checked = !!(c.requisitos?.reqCapacitacion);
+      reqAcuerdo.checked = !!(c.requisitos?.reqAcuerdo);
+      inhDelitos.checked = !!(c.inhabilidades?.inhDelitos);
+      inhMedidas.checked = !!(c.inhabilidades?.inhMedidas);
+      inhRespParental.checked = !!(c.inhabilidades?.inhRespParental);
+      inhTutela.checked = !!(c.inhabilidades?.inhTutela);
       estadoCaso.value = c.estadoCaso || "Abierto";
       expedienteSelect.value = c.expedienteReferencia || "";
       expedienteInfo.textContent = c.expedienteReferencia ? `Seleccionado: ${getExpDisplay(c.expedienteReferencia)}` : "";
+      lugarInstitucionalizacion.value = c.lugarInstitucionalizacion || "";
+      contactoInstitucionalizacion.value = c.contactoInstitucionalizacion || "";
+      actualizarAutoChecks();
       showTab('registro');
     };
 
@@ -474,11 +664,7 @@
     function renderTimeline(){
       const arr = Array.isArray(casoActual?.seguimientos) ? casoActual.seguimientos : [];
       timeline.innerHTML = arr.length
-        ? arr.map((s,i)=>`<div class='timeline-item'>
-              <div class='date'>${s.fecha}</div>
-              <div>${s.texto}</div>
-              <button class='delete-btn' title='Eliminar' onclick='eliminarSeguimiento(${i})'>✕</button>
-            </div>`).join("")
+        ? arr.map((s,i)=>`<div class='timeline-item'><div class='date'>${s.fecha}</div><div>${s.texto}</div><button class='delete-btn' title='Eliminar' onclick='eliminarSeguimiento(${i})'>✕</button></div>`).join("")
         : "<p>Sin seguimientos</p>";
     }
 
@@ -506,19 +692,23 @@
       document.querySelectorAll("#tablaCasos input[type=checkbox]").forEach(c=>c.checked=false);
     };
 
-    // Vista (modal) del Caso con datos + seguimientos + historial
+    // Vista (modal) del Caso
     window.verCaso = async (id)=>{
       const s = await getDoc(doc(db1,"casos",id));
       if(!s.exists()) return;
       casoActual = {id, ...s.data()};
-      const historialHTML = (casoActual.historial||[])
-        .map(h=>`<p><span class='status-en'>${h.fecha}</span>: ${h.accion}</p>`).join("") || "<p>Sin historial</p>";
-      const seguimientosHTML = (casoActual.seguimientos||[])
-        .map(sg=>`<p><span class='status-en'>${sg.fecha}</span>: ${sg.texto}</p>`).join("") || "<p>Sin seguimiento</p>";
 
-      const expHtml = casoActual.expedienteReferencia
-        ? `<a class="link" href="#" onclick="verExpediente('${casoActual.expedienteReferencia}')">${getExpDisplay(casoActual.expedienteReferencia)}</a>`
-        : "-";
+      const historialHTML = (casoActual.historial||[]).map(h=>`<p><span class='status-en'>${h.fecha}</span>: ${h.accion}</p>`).join("") || "<p>Sin historial</p>";
+      const seguimientosHTML = (casoActual.seguimientos||[]).map(sg=>`<p><span class='status-en'>${sg.fecha}</span>: ${sg.texto}</p>`).join("") || "<p>Sin seguimiento</p>";
+      const expHtml = casoActual.expedienteReferencia ? `<a class="link" href="#" onclick="verExpediente('${casoActual.expedienteReferencia}')">${getExpDisplay(casoActual.expedienteReferencia)}</a>` : "-";
+
+      const reqList = casoActual.requisitos ? Object.entries(casoActual.requisitos).filter(([k,v])=>v).map(([k])=>k.replace('req','').replace(/[A-Z]/g,' $&')).join(', ') : '-';
+      const inhList = casoActual.inhabilidades ? Object.entries(casoActual.inhabilidades).filter(([k,v])=>v).map(([k])=>k.replace('inh','').replace(/[A-Z]/g,' $&')).join(', ') : '-';
+
+      // Cálculos de edad para la vista
+      const edadN = calcEdad(casoActual.fechaNacimientoNNA);
+      const edadF = calcEdad(casoActual.faFechaNac);
+      const diff = (edadN!=null && edadF!=null) ? (edadF-edadN) : null;
 
       modalCasoBody.innerHTML = `
         <div class='section'>
@@ -528,8 +718,12 @@
             <div><b>DNI:</b> ${casoActual.dniNNA||""}</div>
           </div>
           <div class="form-row">
-            <div><b>Fecha Nac.:</b> ${casoActual.fechaNacimientoNNA||""}</div>
+            <div><b>Fecha Nac.:</b> ${casoActual.fechaNacimientoNNA||""} ${edadN!=null?`<span class='badge badge-ok'>${edadN} años</span>`:""}</div>
             <div><b>Género:</b> ${casoActual.generoNNA||""}</div>
+          </div>
+          <div class="form-row">
+            <div><b>Centro de vida:</b> ${casoActual.centroVida||""}</div>
+            <div><b>Vínculos fraternos:</b> ${casoActual.vinculosFraternos||""}</div>
           </div>
           <div class="form-row">
             <div><b>Estado:</b> ${casoActual.estadoCaso||""}</div>
@@ -540,14 +734,63 @@
             <div><b>Contacto institucionalización:</b> ${casoActual.contactoInstitucionalizacion||""}</div>
           </div>
         </div>
+
+        <div class='section'>
+          <h4>Medida y SAF</h4>
+          <div class="form-row">
+            <div><b>Tipo de medida:</b> ${casoActual.tipoMedida||""}</div>
+            <div><b>Autoridad:</b> ${casoActual.autoridadInterviniente||""}</div>
+          </div>
+          <div class="form-row">
+            <div><b>Fecha medida:</b> ${casoActual.fechaMedida||""}</div>
+            <div><b>Ingreso SAF:</b> ${casoActual.fechaIngresoSAF||""}</div>
+          </div>
+          <div class="form-row">
+            <div><b>Tipo familia:</b> ${casoActual.tipoFamilia||""}</div>
+            <div><b>RUFAAFA:</b> ${casoActual.rufAAFA||""}</div>
+          </div>
+          <div class="form-row">
+            <div><b>Referente:</b> ${casoActual.faNombre||""}</div>
+            <div><b>DNI Referente:</b> ${casoActual.faDni||""}</div>
+          </div>
+          <div class="form-row">
+            <div><b>Fecha nac. referente:</b> ${casoActual.faFechaNac||""} ${edadF!=null?`<span class='badge ${edadF>=25?'badge-ok':'badge-danger'}'>${edadF} años</span>`:""}</div>
+            <div><b>Contacto FA:</b> ${casoActual.faContacto||""}</div>
+          </div>
+          <div class="form-row">
+            <div><b>Domicilio FA:</b> ${casoActual.faDomicilio||""}</div>
+            <div><b>Residencia en Misiones:</b> ${casoActual.faResidenciaAnos||"-"} ${casoActual.faResidenciaAnos?`<span class='badge ${(parseInt(casoActual.faResidenciaAnos,10)>=2)?'badge-ok':'badge-warn'}'>${casoActual.faResidenciaAnos} años</span>`:""}</div>
+          </div>
+          <div><b>Etapas:</b> ${Object.entries(casoActual.etapas||{}).filter(([k,v])=>v).map(([k])=>k).join(', ')||'-'}</div>
+          <div style="margin-top:6px"><b>Plan de intervención:</b><br>${(casoActual.planIntervencion||"").replace(/\n/g,"<br>")}</div>
+          ${diff!=null?`<div style="margin-top:6px"><b>Diferencia de edad referente/NNA:</b> ${diff} años ${diff>=15?'<span class="badge badge-ok">OK</span>':'<span class="badge badge-danger">Insuficiente</span>'}</div>`:""}
+        </div>
+
+        <div class='section'>
+          <h4>RUFAAFA</h4>
+          <p><b>Requisitos cumplidos:</b> ${reqList}</p>
+          <p><b>Inhabilidades (negativas):</b> ${inhList}</p>
+        </div>
+
         <div class='section'>
           <h4>Situación</h4>
           <p>${(casoActual.situacionVulneracion||"").replace(/\n/g,"<br>")}</p>
+          <h4 style="margin-top:8px">Observaciones de derechos</h4>
+          <p>${(casoActual.obsDerechos||"").replace(/\n/g,"<br>")}</p>
         </div>
+
         <div class='section'>
           <h4>Seguimientos</h4>
           ${seguimientosHTML}
         </div>
+        <div class='section'>
+          <h4>Egreso</h4>
+          <div class="form-row">
+            <div><b>Causal:</b> ${casoActual.causalEgreso||"-"}</div>
+            <div><b>Fecha:</b> ${casoActual.fechaEgreso||"-"}</div>
+          </div>
+        </div>
+
         <div class='section'>
           <h4>Historial de cambios</h4>
           ${historialHTML}
@@ -567,7 +810,7 @@
       }
     };
 
-    // Modal Expediente (causas) con seguimientos
+    // Modal Expediente
     window.verExpediente = async (id)=>{
       const d=await getDoc(doc(db2,"causas",id));
       if(!d.exists()) return;
@@ -594,15 +837,25 @@
 
     window.cerrarModalExpediente = ()=>$('modalExpediente').classList.remove("open");
 
-    // Impresión genérica
+    // Utilidades de impresión/exportación
     window.imprimirSeccion = (id)=>{
       const el = document.getElementById(id);
       if(!el) return;
       const w = window.open("", "_blank");
-      w.document.write(`<html><head><title>Imprimir</title></head><body>${el.innerHTML}</body></html>`);
+      const styles = document.querySelector('style')?.outerHTML || "";
+      w.document.write(`<html><head><title>Imprimir</title>${styles}</head><body>${el.innerHTML}</body></html>`);
       w.document.close();
       w.focus();
       w.print();
+    };
+    window.exportarJSON = ()=>{
+      const blob = new Blob([JSON.stringify(casos,null,2)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'casos.json';
+      a.click();
+      URL.revokeObjectURL(url);
     };
 
     // Tabs
