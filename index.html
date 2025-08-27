@@ -3,20 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sistema de Protección de Personas — SAF (Ley II N° 36)</title>
+  <title>Sistema de Protección de Personas — SAF (Ley II N° 36) · RTDB</title>
   <style>
     :root{
       --brand:#004085;--bg:#f5f6f8;--card:#fff;--line:#e3e6ea;--muted:#6b7280;
       --accent:#0d6efd;--accent-dark:#0b5ed7;--ok:#198754;--warn:#ea580c;--danger:#dc3545;
     }
-    *{box-sizing:border-box} body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);margin:0;padding:20px;color:#111}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);margin:0;padding:20px;color:#111}
     .container{max-width:1300px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-    .nav-tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line);gap:8px;padding:10px;background:#f8fafc}
-    .nav-tab{flex:1 1 220px;padding:12px 16px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:700;font-size:14px;border-radius:10px;transition:filter .15s ease, transform .02s ease}
-    .nav-tab:hover{ filter:brightness(0.95) } .nav-tab:active{ transform:translateY(1px) }
-    .nav-tab.active{ background:var(--accent-dark); color:#fff; box-shadow:inset 0 -2px 0 rgba(255,255,255,.25) }
+    /* --- Navegación como tarjetas --- */
+    .nav-wrap{background:#f8fafc;border-bottom:1px solid var(--line);padding:16px}
+    .nav-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .nav-card{display:flex;flex-direction:column;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;transition:transform .06s ease, box-shadow .2s ease;cursor:pointer}
+    .nav-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.06);transform:translateY(-1px)}
+    .nav-card h4{margin:0;color:var(--brand)}
+    .nav-card p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.35}
+    .nav-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .nav-btn{padding:10px 12px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-weight:700}
+    .nav-btn:active{transform:translateY(1px)}
     .tab-content{display:none;padding:22px}.tab-content.active{display:block}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}.form-row.full{grid-template-columns:1fr}
+    /* --- Layouts y tablas --- */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .form-row.full{grid-template-columns:1fr}
     .subgrid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
     label{display:block;margin:6px 0;font-weight:600}
     input,select,textarea{width:100%;padding:10px;border:1px solid #cfd6de;border-radius:8px;background:#fff}
@@ -38,6 +48,7 @@
     @keyframes hilite{0%{background:#fff9c4} 100%{background:transparent}}
     .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
     .section{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+    /* --- Sidebar Seguimiento --- */
     #sidebarSeguimiento{position:fixed;top:0;right:-460px;width:460px;height:100%;background:#fff;box-shadow:-2px 0 14px rgba(0,0,0,.15);transition:right .28s;z-index:1200;display:flex;flex-direction:column}
     #sidebarSeguimiento.active{right:0}
     #sidebarSeguimiento .s-header{background:var(--brand);color:#fff;padding:14px;display:flex;justify-content:space-between;align-items:center}
@@ -45,6 +56,7 @@
     .timeline-item{border-left:3px solid var(--brand);margin-left:10px;padding-left:12px;margin-bottom:12px;position:relative}
     .timeline-item .date{font-size:.82rem;color:var(--muted)}.timeline-item .delete-btn{position:absolute;right:0;top:0;background:none;border:none;color:var(--danger);cursor:pointer}
     .seguimiento-form{border-top:1px solid var(--line);padding:14px;background:#fafbfc}
+    /* --- Modales --- */
     .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1300;align-items:center;justify-content:center;padding:20px}
     .modal.open{display:flex}.modal-card{width:min(980px,96vw);max-height:88vh;background:#fff;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
     .modal-head{background:var(--brand);color:#fff;padding:14px;display:flex;justify-content:space-between;align-items:center}
@@ -53,53 +65,58 @@
     .filters{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
     .filters input,.filters select{padding:8px;border-radius:8px;border:1px solid var(--line)}
     .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:.8rem;border:1px solid var(--line);background:#fff}
-    .badge-ok{color:var(--ok);border-color:var(--ok)} .badge-warn{color:var(--warn);border-color:var(--warn)}
-    .badge-danger{color:var(--danger);border-color:var(--danger)}
-    @media (max-width: 1024px) {.grid-2 { grid-template-columns: 1fr } .form-row { grid-template-columns: 1fr } .nav-tab { flex:1 1 100%; text-align:center } .cases-table th, .cases-table td { font-size:.9rem; padding:6px }}
-    @media (max-width: 600px) {body { padding: 8px } .container { border-radius: 10px } h1, h2, h3, h4 { font-size: 1rem } .btn { padding: 8px 10px; font-size: .9rem } .actions { flex-direction: column; gap: 4px } .cases-table { display:block; overflow-x:auto } #sidebarSeguimiento { width: 100% } .modal-card { width:100%; height:95vh; border-radius:0 }}
-  
-/* --- Ajustes de responsividad extra --- */
-
-/* Pantallas grandes (PC) */
-@media (min-width: 1280px) {
-  body { padding: 24px; }
-  .container { padding: 16px; }
-  .cases-table th, .cases-table td { font-size: 1rem; }
-}
-
-/* Tablets en horizontal */
-@media (max-width: 900px) {
-  .form-row, .subgrid-3 { grid-template-columns: 1fr; }
-  .inline { flex-direction: column; align-items: flex-start; }
-  .actions { justify-content: flex-start; }
-}
-
-/* Móviles en vertical */
-@media (max-width: 480px) {
-  .nav-tabs { flex-direction: column; gap: 6px; }
-  .nav-tab { width: 100%; font-size: .9rem; }
-  .form-row, .subgrid-3 { grid-template-columns: 1fr; }
-  .section { padding: 10px; }
-  label { font-size: .85rem; }
-  input, select, textarea { font-size: .9rem; padding: 8px; }
-  .cases-table th, .cases-table td { font-size: .8rem; padding: 5px; }
-}
-
-</style>
+    .badge-ok{color:var(--ok);border-color:var(--ok)} .badge-warn{color:var(--warn);border-color:var(--warn)} .badge-danger{color:var(--danger);border-color:var(--danger)}
+    /* --- Responsividad extra --- */
+    @media (max-width: 1140px){ .nav-grid{grid-template-columns:1fr 1fr} }
+    @media (max-width: 760px){
+      body { padding: 8px }
+      .container { border-radius: 10px }
+      .nav-grid{grid-template-columns:1fr}
+      .form-row, .subgrid-3 { grid-template-columns: 1fr }
+      .grid-2 { grid-template-columns: 1fr }
+      .nav-card{padding:12px}
+      h1,h2,h3,h4{font-size:1rem}
+      .btn{padding:8px 10px;font-size:.95rem}
+      .cases-table{display:block;overflow-x:auto}
+      #sidebarSeguimiento{width:100%}
+      .modal-card{width:100%;height:95vh;border-radius:0}
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <div class="nav-tabs">
-      <button class="nav-tab active" onclick="showTab('inicio',event)">Panel de Inicio</button>
-      <button class="nav-tab" onclick="showTab('registro',event)">Nuevo Caso</button>
-      <button class="nav-tab" onclick="showTab('casos',event)">Casos Registrados</button>
+    <!-- Navegación como tarjetas con resumen -->
+    <div class="nav-wrap">
+      <div class="nav-grid">
+        <div class="nav-card" onclick="showTab('inicio',event)">
+          <h4>Panel de Inicio</h4>
+          <p>Resumen en tiempo real: totales de casos, estados y lista rápida de trámites.</p>
+          <div class="nav-actions">
+            <button class="nav-btn">Abrir Panel</button>
+          </div>
+        </div>
+        <div class="nav-card" onclick="showTab('registro',event)">
+          <h4>Nuevo Caso</h4>
+          <p>Registre un caso de SAF con validaciones automáticas según la Ley II N° 36.</p>
+          <div class="nav-actions">
+            <button class="nav-btn">Crear Caso</button>
+          </div>
+        </div>
+        <div class="nav-card" onclick="showTab('casos',event)">
+          <h4>Casos Registrados</h4>
+          <p>Listado filtrable, vista detallada, edición, seguimiento y eliminación.</p>
+          <div class="nav-actions">
+            <button class="nav-btn">Ver Listado</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Panel de Inicio -->
     <div id="inicio" class="tab-content active">
       <h2>Panel de Inicio</h2>
       <p class="small" style="background:#fff3cd;padding:10px;border-radius:10px">
-        ℹ️ <b>Ayuda:</b> Use las pestañas superiores para registrar nuevos casos, ver el listado o gestionar seguimientos.
+        ℹ️ <b>Ayuda:</b> Use las tarjetas superiores para navegar entre paneles.
       </p>
       <div class="grid-2">
         <div class="section" id="inicioLeft">
@@ -110,7 +127,6 @@
           <p class="status-cerrado">Cerrados: <strong id="casosCerrados">0</strong></p>
           <div style="margin-top:8px" class="inline">
             <button class="btn btn-primary" onclick="imprimirSeccion('inicio')">Imprimir Panel</button>
-            
           </div>
         </div>
         <div class="section" id="inicioRight">
@@ -280,11 +296,10 @@
 
     <!-- Casos -->
     <div id="casos" class="tab-content">
-      <div style="display:flex;align-items:center;gap:10px;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap">
         <h2>Casos Registrados</h2>
         <div class="inline">
           <button class="btn btn-primary" onclick="imprimirSeccion('casos')">Imprimir listado</button>
-          
         </div>
       </div>
       <div class="filters">
@@ -337,8 +352,9 @@
   </div></div>
 
   <script type="module">
+    // ===== Firebase (RTDB) =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getDatabase, ref, push, get, child, set, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     function formatFechaHora(date){
       return new Intl.DateTimeFormat("es-AR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(date);
@@ -348,18 +364,27 @@
     }
     const $ = (id)=>document.getElementById(id);
 
-    // Firebase App 1: proteccion-personas (casos)
-    const app1 = initializeApp({apiKey:"AIzaSyAWlsFqN09y_DAAIKLLIjGjjyR2_rKJIFs",authDomain:"proteccion-personas.firebaseapp.com",projectId:"proteccion-personas"},"app1");
-    const db1 = getFirestore(app1);
-    // Firebase App 2: causas-defensoria (causas)
-    const app2 = initializeApp({apiKey:"AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",authDomain:"causas-defensoria.firebaseapp.com",projectId:"causas-defensoria",storageBucket:"causas-defensoria.firebasestorage.app",messagingSenderId:"186064671470",appId:"1:186064671470:web:b58bae5eadbe6e469f19ff"},"app2");
-    const db2 = getFirestore(app2);
+    // Firebase App 1: proteccion-personas (casos) — RTDB
+   const app1 = initializeApp({apiKey:"AIzaSyAWlsFqN09y_DAAIKLLIjGjjyR2_rKJIFs",authDomain:"proteccion-personas.firebaseapp.com",projectId:"proteccion-personas"},"app1");
+    const rtdb1 = getDatabase(app1);
 
-    // Estado
+    // Firebase App 2: causas-defensoria (causas) — RTDB
+    const app2 = initializeApp({
+      apiKey:"AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
+      authDomain:"causas-defensoria.firebaseapp.com",
+      projectId:"causas-defensoria",
+      storageBucket:"causas-defensoria.firebasestorage.app",
+      messagingSenderId:"186064671470",
+      appId:"1:186064671470:web:b58bae5eadbe6e469f19ff",
+      databaseURL:"https://causas-defensoria.firebaseio.com"
+    },"app2");
+    const rtdb2 = getDatabase(app2);
+
+    // ===== Estado =====
     let casos=[], casosFiltrados=[], casoActual=null, editandoId=null, lastEditedId=null;
     let causasIndex = {};
 
-    // Refs
+    // ===== Refs DOM =====
     const form=$('casoForm'), formTitle=$('formTitle');
     const nombreNNA=$('nombreNNA'), dniNNA=$('dniNNA'), fechaNacimientoNNA=$('fechaNacimientoNNA'), generoNNA=$('generoNNA'),
           centroVida=$('centroVida'), vinculosFraternos=$('vinculosFraternos'), situacionVulneracion=$('situacionVulneracion');
@@ -378,20 +403,7 @@
     const modalCaso=$('modalCaso'), modalCasoBody=$('modalCasoBody');
     const validacionMsg=$('validacionMsg');
 
-    // Eventos
-    document.addEventListener("DOMContentLoaded", async ()=>{
-      await Promise.all([cargarExpedientes(), cargarCasos()]);
-      [fechaNacimientoNNA, faFechaNac, faResidenciaAnos].forEach(el=> el.addEventListener('input', actualizarAutoChecks));
-    });
-    form.addEventListener("submit", guardarCaso);
-    expedienteSelect.addEventListener("change", ()=>{
-      const id = expedienteSelect.value;
-      if(!id){expedienteInfo.textContent=""; return;}
-      const c = causasIndex[id];
-      expedienteInfo.textContent = c ? `Seleccionado: ${c.numero || id} — ${c.caratula || ''}` : "";
-    });
-
-    // Utilidades
+    // ===== Utilidades =====
     function calcEdad(dateStr){
       if(!dateStr) return null;
       const d=new Date(dateStr), t=new Date();
@@ -411,10 +423,7 @@
       if(edadNNA!=null) setBadge(edadNNAInfo, `Edad NNA: ${edadNNA} años`, "badge-ok"); else setBadge(edadNNAInfo, "Edad NNA: —");
       if(edadFA!=null)  setBadge(edadFAInfo, `Edad referente: ${edadFA} años`, edadFA>=25?"badge-ok":"badge-danger"); else setBadge(edadFAInfo, "Edad referente: —");
 
-      // Mayor de 25
       if(edadFA!=null){ reqEdad.checked = edadFA>=25; }
-
-      // Diferencia ≥ 15
       if(edadFA!=null && edadNNA!=null){
         const diff = edadFA - edadNNA;
         const ok = diff>=15;
@@ -423,8 +432,6 @@
       }else{
         setBadge(difEdadInfo, "Diferencia con NNA: —");
       }
-
-      // Residencia en Misiones (≥2 años)
       const anos = parseInt(faResidenciaAnos.value,10);
       if(!isNaN(anos)){
         reqDomicilio.checked = anos>=2;
@@ -432,8 +439,6 @@
       }else{
         setBadge(residenciaInfo, "Residencia: —");
       }
-
-      // Mensaje resumen
       const faltas = [];
       if(edadFA!=null && edadFA<25) faltas.push("El referente debe ser ≥ 25 años.");
       if(edadFA!=null && edadNNA!=null && (edadFA-edadNNA)<15) faltas.push("La diferencia de edad con el NNA debe ser ≥ 15 años.");
@@ -441,41 +446,46 @@
       validacionMsg.textContent = faltas.length? "⚠️ " + faltas.join(" ") : "";
     }
 
-    // Cargar expedientes
+    // ===== Eventos =====
+    document.addEventListener("DOMContentLoaded", async ()=>{
+      await Promise.all([cargarExpedientes(), cargarCasos()]);
+      [fechaNacimientoNNA, faFechaNac, faResidenciaAnos].forEach(el=> el.addEventListener('input', actualizarAutoChecks));
+    });
+    form.addEventListener("submit", guardarCaso);
+    expedienteSelect.addEventListener("change", ()=>{
+      const id = expedienteSelect.value;
+      if(!id){expedienteInfo.textContent=""; return;}
+      const c = causasIndex[id];
+      expedienteInfo.textContent = c ? `Seleccionado: ${c.numero || id} — ${c.caratula || ''}` : "";
+    });
+
+    // ===== Cargar expedientes (RTDB app2:/causas) =====
     async function cargarExpedientes(){
       expedienteSelect.innerHTML = "<option value=''>-- Seleccione --</option>";
       causasIndex = {};
-      const snap = await getDocs(collection(db2,"causas"));
-      snap.forEach(d=>{
-        const data = d.data();
-        causasIndex[d.id] = data;
-        const opt = document.createElement("option");
-        opt.value = d.id;
-        opt.textContent = (data.numero ? ("Causa " + data.numero) : "Expediente") + (data.caratula ? (" – " + data.caratula) : "");
-        expedienteSelect.appendChild(opt);
-      });
+      const snap = await get(child(ref(rtdb2), "causas"));
+      if(snap.exists()){
+        const data = snap.val();
+        Object.entries(data).forEach(([id,val])=>{
+          causasIndex[id] = val || {};
+          const opt = document.createElement("option");
+          opt.value = id;
+          const numero = val?.numero ? ("Causa " + val.numero) : "Expediente";
+          opt.textContent = numero + (val?.caratula ? (" – " + val.caratula) : "");
+          expedienteSelect.appendChild(opt);
+        });
+      }
     }
 
-    // Guardar/Actualizar caso
+    // ===== Guardar / Actualizar caso (RTDB app1:/casos) =====
     async function guardarCaso(e){
       e.preventDefault();
-      // Validaciones automáticas obligatorias (Arts. 18 y concordantes)
       const edadN = calcEdad(fechaNacimientoNNA.value);
       const edadF = calcEdad(faFechaNac.value);
       const anosRes = parseInt(faResidenciaAnos.value,10);
-
-      if(edadF!=null && edadF<25){
-        alert("No se puede guardar: el referente debe tener 25 años o más (Art. 18).");
-        return;
-      }
-      if(edadN!=null && edadF!=null && (edadF-edadN)<15){
-        alert("No se puede guardar: la diferencia entre el referente y el NNA debe ser de 15 años o más (Art. 18).");
-        return;
-      }
-      if(!isNaN(anosRes) && anosRes<2){
-        alert("No se puede guardar: la residencia en Misiones debe ser de 2 años o más (Art. 18).");
-        return;
-      }
+      if(edadF!=null && edadF<25){ alert("No se puede guardar: el referente debe tener 25 años o más (Art. 18)."); return; }
+      if(edadN!=null && edadF!=null && (edadF-edadN)<15){ alert("No se puede guardar: la diferencia entre el referente y el NNA debe ser de 15 años o más (Art. 18)."); return; }
+      if(!isNaN(anosRes) && anosRes<2){ alert("No se puede guardar: la residencia en Misiones debe ser de 2 años o más (Art. 18)."); return; }
 
       const etapas = {
         convocatoria: !!etapaConvocatoria.checked,
@@ -534,21 +544,23 @@
       };
 
       if(editandoId){
-        const ref = doc(db1,"casos",editandoId);
-        const snap = await getDoc(ref);
-        let historial = (snap.exists() && snap.data().historial) ? snap.data().historial : [];
+        const targetRef = ref(rtdb1, "casos/" + editandoId);
+        const snap = await get(targetRef);
+        let historial = (snap.exists() && snap.val().historial) ? snap.val().historial : [];
         historial.push({fecha:formatFechaHora(new Date()), accion:"Edición del caso"});
-        await updateDoc(ref, {...data, historial});
+        await update(targetRef, {...data, historial});
         lastEditedId = editandoId;
         editandoId = null;
         formTitle.textContent = "Nuevo Caso";
       }else{
-        await addDoc(collection(db1,"casos"),{
+        const nuevo = {
           ...data,
           fechaRegistro: formatFecha(new Date()),
           seguimientos: seguimientoInicial.value ? [{fecha:formatFechaHora(new Date()), texto: seguimientoInicial.value}] : [],
           historial: [{fecha:formatFechaHora(new Date()), accion:"Creación del caso"}]
-        });
+        };
+        const res = await push(ref(rtdb1,"casos"), nuevo);
+        lastEditedId = res.key;
       }
       form.reset();
       expedienteInfo.textContent = "";
@@ -557,11 +569,14 @@
       showTab('casos');
     }
 
-    // Cargar casos
+    // ===== Cargar casos (RTDB app1:/casos) =====
     async function cargarCasos(){
       casos = [];
-      const s = await getDocs(collection(db1,"casos"));
-      s.forEach(d=>casos.push({id:d.id, ...d.data()}));
+      const s = await get(child(ref(rtdb1),"casos"));
+      if(s.exists()){
+        const data = s.val() || {};
+        casos = Object.entries(data).map(([id, val])=>({id, ...(val||{})}));
+      }
       aplicarFiltros();
       actualizarDashboard();
       renderTramite();
@@ -630,7 +645,7 @@
       });
     }
 
-    // Editar
+    // ===== Editar (carga en formulario) =====
     window.editarCaso = (id)=>{
       const c = casos.find(x=>x.id===id); if(!c) return;
       editandoId = id; formTitle.textContent = "Editar Caso";
@@ -652,7 +667,6 @@
       planIntervencion.value = c.planIntervencion || "";
       causalEgreso.value = c.causalEgreso || ""; fechaEgreso.value = c.fechaEgreso || "";
       obsDerechos.value = c.obsDerechos || "";
-      // Requisitos/Inhabilidades
       reqDomicilio.checked = !!(c.requisitos?.reqDomicilio);
       reqEdad.checked = !!(c.requisitos?.reqEdad);
       reqDiferenciaEdad.checked = !!(c.requisitos?.reqDiferenciaEdad);
@@ -676,12 +690,12 @@
       showTab('registro');
     };
 
-    // Sidebar Seguimiento
+    // ===== Sidebar Seguimiento =====
     window.toggleSidebar = async (id, ch)=>{
       if(ch){
-        const s = await getDoc(doc(db1,"casos",id));
+        const s = await get(child(ref(rtdb1),"casos/"+id));
         if(s.exists()){
-          casoActual = {id, ...s.data()};
+          casoActual = {id, ...(s.val()||{})};
           sidebarTitle.textContent = "Seguimiento · " + (casoActual.nombreNNA||"");
           renderTimeline();
           sidebarSeguimiento.classList.add("active");
@@ -700,7 +714,7 @@
       if(!casoActual || !nuevoSeguimiento.value) return;
       const arr = Array.isArray(casoActual.seguimientos) ? casoActual.seguimientos : [];
       arr.push({fecha:formatFechaHora(new Date()), texto:nuevoSeguimiento.value});
-      await updateDoc(doc(db1,"casos",casoActual.id), {seguimientos:arr});
+      await update(ref(rtdb1,"casos/"+casoActual.id), {seguimientos:arr});
       casoActual.seguimientos = arr;
       nuevoSeguimiento.value = "";
       renderTimeline();
@@ -710,7 +724,7 @@
       if(!casoActual) return;
       const arr = Array.isArray(casoActual.seguimientos) ? casoActual.seguimientos : [];
       arr.splice(i,1);
-      await updateDoc(doc(db1,"casos",casoActual.id), {seguimientos:arr});
+      await update(ref(rtdb1,"casos/"+casoActual.id), {seguimientos:arr});
       casoActual.seguimientos = arr;
       renderTimeline();
     };
@@ -720,11 +734,11 @@
       document.querySelectorAll("#tablaCasos input[type=checkbox]").forEach(c=>c.checked=false);
     };
 
-    // Vista (modal) del Caso
+    // ===== Vista (modal) del Caso =====
     window.verCaso = async (id)=>{
-      const s = await getDoc(doc(db1,"casos",id));
+      const s = await get(child(ref(rtdb1),"casos/"+id));
       if(!s.exists()) return;
-      casoActual = {id, ...s.data()};
+      casoActual = {id, ...(s.val()||{})};
 
       const historialHTML = (casoActual.historial||[]).map(h=>`<p><span class='status-en'>${h.fecha}</span>: ${h.accion}</p>`).join("") || "<p>Sin historial</p>";
       const seguimientosHTML = (casoActual.seguimientos||[]).map(sg=>`<p><span class='status-en'>${sg.fecha}</span>: ${sg.texto}</p>`).join("") || "<p>Sin seguimiento</p>";
@@ -733,7 +747,6 @@
       const reqList = casoActual.requisitos ? Object.entries(casoActual.requisitos).filter(([k,v])=>v).map(([k])=>k.replace('req','').replace(/[A-Z]/g,' $&')).join(', ') : '-';
       const inhList = casoActual.inhabilidades ? Object.entries(casoActual.inhabilidades).filter(([k,v])=>v).map(([k])=>k.replace('inh','').replace(/[A-Z]/g,' $&')).join(', ') : '-';
 
-      // Cálculos de edad para la vista
       const edadN = calcEdad(casoActual.fechaNacimientoNNA);
       const edadF = calcEdad(casoActual.faFechaNac);
       const diff = (edadN!=null && edadF!=null) ? (edadF-edadN) : null;
@@ -832,17 +845,17 @@
       const targetId = id || (casoActual && casoActual.id);
       if(!targetId) return;
       if(confirm("¿Eliminar caso?")){
-        await deleteDoc(doc(db1,"casos",targetId));
+        await remove(ref(rtdb1,"casos/"+targetId));
         modalCaso.classList.remove("open");
         await cargarCasos();
       }
     };
 
-    // Modal Expediente
+    // ===== Modal Expediente (RTDB app2:/causas/{id}) =====
     window.verExpediente = async (id)=>{
-      const d=await getDoc(doc(db2,"causas",id));
+      const d=await get(child(ref(rtdb2),"causas/"+id));
       if(!d.exists()) return;
-      const data=d.data();
+      const data=d.val()||{};
       const segs = (data.seguimientos||[])
         .map(s=>`<p><span style="color:#004085;font-weight:bold">${s.fecha}:</span> ${s.texto}</p>`)
         .join("") || "<p style='color:gray'>Sin seguimientos registrados</p>";
@@ -865,7 +878,7 @@
 
     window.cerrarModalExpediente = ()=>$('modalExpediente').classList.remove("open");
 
-    // Utilidades de impresión/exportación
+    // ===== Utilidades de impresión/exportación =====
     window.imprimirSeccion = (id)=>{
       const el = document.getElementById(id);
       if(!el) return;
@@ -886,13 +899,12 @@
       URL.revokeObjectURL(url);
     };
 
-    // Tabs
+    // ===== Tabs =====
     window.showTab = (id, e)=>{
       document.querySelectorAll(".tab-content").forEach(x=>x.classList.remove("active"));
-      document.querySelectorAll(".nav-tab").forEach(x=>x.classList.remove("active"));
       const tab = document.getElementById(id);
       if(tab) tab.classList.add("active");
-      if(e && e.target) e.target.classList.add("active");
+      // No marcamos 'active' en tarjetas para mantener estilo uniforme
     };
   </script>
 </body>
