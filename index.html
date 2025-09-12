@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sistema de Protección de Personas — SAF (Ley II N° 36) · RTDB</title>
+  <title>Proteccion NNyA</title>
   <style>
     :root{
       --brand:#004085;--bg: #a3c8ff;--card:#fff;--line:#e3e6ea;--muted:#6b7280;
@@ -66,6 +66,13 @@
     .filters input,.filters select{padding:8px;border-radius:8px;border:1px solid var(--line)}
     .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:.8rem;border:1px solid var(--line);background:#fff}
     .badge-ok{color:var(--ok);border-color:var(--ok)} .badge-warn{color:var(--warn);border-color:var(--warn)} .badge-danger{color:var(--danger);border-color:var(--danger)}
+    /* --- Nuevo Estilo de Registro --- */
+    .reg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:16px}
+    .reg-card{display:flex;flex-direction:column;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;transition:transform .06s ease, box-shadow .2s ease;cursor:pointer}
+    .reg-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.06);transform:translateY(-1px)}
+    .reg-card h4{margin:0;color:var(--brand)}
+    .reg-card p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.35}
+    .reg-card .badge{position:absolute;top:10px;right:10px}
     /* --- Responsividad extra --- */
     @media (max-width: 1140px){ .nav-grid{grid-template-columns:1fr 1fr} }
     @media (max-width: 760px){
@@ -96,7 +103,7 @@
         </div>
         <div class="nav-card" onclick="showTab('registro',event)">
           <h4>Nuevo Caso</h4>
-          <p>Registre un caso de SAF con validaciones automáticas según la Ley II N° 36.</p>
+          <p>Registre un caso según la Ley II N° 16 y II N°36</p>
           <div class="nav-actions">
             <button class="nav-btn">Crear Caso</button>
           </div>
@@ -136,130 +143,237 @@
 
     <div id="registro" class="tab-content">
       <h2 id="formTitle">Nuevo Caso</h2>
-      <form id="casoForm">
-        <fieldset class="fieldset">
-          <legend>Datos del NNA</legend>
-          <div class="form-row">
-            <div><label>Nombre *</label><input id="nombreNNA" required></div>
-            <div><label>DNI</label><input id="dniNNA"></div>
-          </div>
-          <div class="form-row">
-            <div><label>Fecha nac.</label><input type="date" id="fechaNacimientoNNA"></div>
-            <div><label>Género</label>
-              <select id="generoNNA"><option></option><option>Masculino</option><option>Femenino</option><option>Otro</option></select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div><label>Centro de vida (localidad/prov.)</label><input id="centroVida"></div>
-            <div><label>Vínculos fraternos preservados</label>
-              <select id="vinculosFraternos"><option value=""></option><option>Sí</option><option>No</option></select>
-            </div>
-          </div>
-          <div class="form-row full"><label>Situación</label><textarea id="situacionVulneracion"></textarea></div>
-          <div class="small inline">
-            <span id="edadNNAInfo" class="badge">Edad NNA: —</span>
-          </div>
-        </fieldset>
+      <p class="small">Seleccione un módulo para ingresar la información del caso.</p>
+      <div class="reg-grid">
+        <div class="reg-card" onclick="openModal('modulo1')">
+          <h4>Datos del NNA</h4>
+          <p>Información del niño, niña o adolescente según la Ley II - N.º 36.</p>
+          <span class="badge" id="badge-modulo1" style="display:none">✅ Completo</span>
+        </div>
+        <div class="reg-card" onclick="openModal('modulo2')">
+          <h4>Medida y Acogimiento</h4>
+          <p>Detalles sobre la medida de protección y la familia de acogimiento.</p>
+          <span class="badge" id="badge-modulo2" style="display:none">✅ Completo</span>
+        </div>
+        <div class="reg-card" onclick="openModal('modulo3')">
+          <h4>Información Adicional</h4>
+          <p>Registro de datos culturales y personales según la Ley II - N.º 16.</p>
+          <span class="badge" id="badge-modulo3" style="display:none">✅ Completo</span>
+        </div>
+        <div class="reg-card" onclick="openModal('modulo4')">
+          <h4>Información Familiar</h4>
+          <p>Datos de la familia de origen y tipo de vínculo.</p>
+          <span class="badge" id="badge-modulo4" style="display:none">✅ Completo</span>
+        </div>
+        <div class="reg-card" onclick="openModal('modulo5')">
+          <h4>Medidas y Seguimiento</h4>
+          <p>Medidas de protección aplicadas al caso.</p>
+          <span class="badge" id="badge-modulo5" style="display:none">✅ Completo</span>
+        </div>
+        <div class="reg-card" onclick="openModal('modulo6')">
+          <h4>Garantías Procesales</h4>
+          <p>Detalles sobre asistencia letrada y actos infractores.</p>
+          <span class="badge" id="badge-modulo6" style="display:none">✅ Completo</span>
+        </div>
+        <div class="reg-card" onclick="openModal('modulo7')">
+          <h4>Requisitos RUFAAFA</h4>
+          <p>Cumplimiento de los requisitos para la familia de acogimiento.</p>
+          <span class="badge" id="badge-modulo7" style="display:none">✅ Completo</span>
+        </div>
+        <div class="reg-card" onclick="openModal('modulo8')">
+          <h4>Inhabilidades</h4>
+          <p>Condiciones que inhabilitan para ser familia de acogimiento.</p>
+          <span class="badge" id="badge-modulo8" style="display:none">✅ Completo</span>
+        </div>
+        <div class="reg-card" onclick="openModal('modulo9')">
+          <h4>Expediente y Seguimiento</h4>
+          <p>Datos del expediente, estado y seguimiento inicial.</p>
+          <span class="badge" id="badge-modulo9" style="display:none">✅ Completo</span>
+        </div>
+      </div>
+      
+      <div class="form-row full" style="margin-top:20px;">
+        <div class="inline">
+          <button type="button" class="btn btn-primary" onclick="guardarCaso()">Guardar Caso Completo</button>
+          <button type="button" class="btn btn-secondary" onclick="resetForm()">Cancelar</button>
+        </div>
+      </div>
+      <p id="validacionMsg" class="small"></p>
+    </div>
 
-        <fieldset class="fieldset">
-          <legend>Medida y Acogimiento (Ley II N° 36)</legend>
-          <div class="form-row">
-            <div><label>Tipo de medida excepcional</label>
-              <select id="tipoMedida"><option value=""></option><option>Administrativa con intervención judicial</option><option>Judicial</option></select>
-            </div>
-            <div><label>Autoridad interviniente</label><input id="autoridadInterviniente" placeholder="Órgano/juzgado/área"></div>
+    <div style="display:none;">
+      <form id="modulo1Form">
+        <legend>Datos del NNA (Ley II - N.º 36)</legend>
+        <div class="form-row">
+          <div><label>Nombre *</label><input id="nombreNNA" required></div>
+          <div><label>DNI</label><input id="dniNNA"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Fecha nac.</label><input type="date" id="fechaNacimientoNNA"></div>
+          <div><label>Género</label>
+            <select id="generoNNA"><option></option><option>Masculino</option><option>Femenino</option><option>Otro</option></select>
           </div>
-          <div class="form-row">
-            <div><label>Fecha de la medida</label><input type="date" id="fechaMedida"></div>
-            <div><label>Fecha de ingreso al SAF</label><input type="date" id="fechaIngresoSAF"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Centro de vida (localidad/prov.)</label><input id="centroVida"></div>
+          <div><label>Vínculos fraternos preservados</label>
+            <select id="vinculosFraternos"><option value=""></option><option>Sí</option><option>No</option></select>
           </div>
-          <div class="form-row">
-            <div><label>Tipo de familia de acogimiento</label>
-              <select id="tipoFamilia"><option value=""></option><option>Alternativa</option><option>Inmediata (≤ 10 días)</option></select>
-            </div>
-            <div><label>RUFAAFA (N° registro)</label><input id="rufAAFA"></div>
+        </div>
+        <div class="form-row full"><label>Situación</label><textarea id="situacionVulneracion"></textarea></div>
+        <div class="small inline">
+          <span id="edadNNAInfo" class="badge">Edad NNA: —</span>
+        </div>
+      </form>
+      <form id="modulo2Form">
+        <legend>Medida y Acogimiento (Ley II - N.º 36)</legend>
+        <div class="form-row">
+          <div><label>Tipo de medida excepcional</label>
+            <select id="tipoMedida"><option value=""></option><option>Administrativa con intervención judicial</option><option>Judicial</option></select>
           </div>
-
-          <div class="form-row">
-            <div><label>Referente de familia de acogimiento</label><input id="faNombre" placeholder="Nombre y apellido"></div>
-            <div><label>DNI referente</label><input id="faDni" placeholder="Documento"></div>
+          <div><label>Autoridad interviniente</label><input id="autoridadInterviniente" placeholder="Órgano/juzgado/área"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Fecha de la medida</label><input type="date" id="fechaMedida"></div>
+          <div><label>Fecha de ingreso al SAF</label><input type="date" id="fechaIngresoSAF"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Tipo de familia de acogimiento</label>
+            <select id="tipoFamilia"><option value=""></option><option>Alternativa</option><option>Inmediata (≤ 10 días)</option></select>
           </div>
-          <div class="form-row">
-            <div><label>Fecha nac. referente</label><input type="date" id="faFechaNac"></div>
-            <div><label>Contacto (tel/correo)</label><input id="faContacto"></div>
+          <div><label>RUFAAFA (N° registro)</label><input id="rufAAFA"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Referente de familia de acogimiento</label><input id="faNombre" placeholder="Nombre y apellido"></div>
+          <div><label>DNI referente</label><input id="faDni" placeholder="Documento"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Fecha nac. referente</label><input type="date" id="faFechaNac"></div>
+          <div><label>Contacto (tel/correo)</label><input id="faContacto"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Domicilio familia de acogimiento</label><input id="faDomicilio"></div>
+          <div><label>Años de residencia en Misiones</label><input type="number" min="0" step="1" id="faResidenciaAnos" placeholder="Ej: 3"></div>
+        </div>
+        <div class="small inline">
+          <span id="edadFAInfo" class="badge">Edad referente: —</span>
+          <span id="difEdadInfo" class="badge">Diferencia con NNA: —</span>
+          <span id="residenciaInfo" class="badge">Residencia: —</span>
+        </div>
+        <div class="form-row full">
+          <label>Etapa del proceso (Art. 14)</label>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" id="etapaConvocatoria"> Convocatoria</label>
+            <label class="chip"><input type="checkbox" id="etapaEvaluacion"> Evaluación y selección</label>
+            <label class="chip"><input type="checkbox" id="etapaCapacitacion"> Capacitación</label>
+            <label class="chip"><input type="checkbox" id="etapaInscripcion"> Inscripción RUFAAFA</label>
+            <label class="chip"><input type="checkbox" id="etapaPlan"> Plan de intervención</label>
           </div>
-          <div class="form-row">
-            <div><label>Domicilio familia de acogimiento</label><input id="faDomicilio"></div>
-            <div><label>Años de residencia en Misiones</label><input type="number" min="0" step="1" id="faResidenciaAnos" placeholder="Ej: 3"></div>
+        </div>
+        <div class="form-row full">
+          <label>Plan de intervención</label>
+          <textarea id="planIntervencion" placeholder="Objetivos, acciones, roles (Art.14.5)"></textarea>
+        </div>
+        <div class="form-row">
+          <div><label>Egreso (si aplica)</label>
+            <select id="causalEgreso">
+              <option value=""></option>
+              <option>Revinculación con familia de origen</option>
+              <option>Vinculación con familia extensa</option>
+              <option>Adoptabilidad y guarda con fines de adopción</option>
+              <option>Mayoría de edad</option>
+            </select>
           </div>
-
-          <div class="small inline">
-            <span id="edadFAInfo" class="badge">Edad referente: —</span>
-            <span id="difEdadInfo" class="badge">Diferencia con NNA: —</span>
-            <span id="residenciaInfo" class="badge">Residencia: —</span>
+          <div><label>Fecha de egreso</label><input type="date" id="fechaEgreso"></div>
+        </div>
+        <div class="form-row full">
+          <label>Observaciones sobre derecho a ser oído / identidad / integridad</label>
+          <textarea id="obsDerechos" placeholder="Registro de escucha activa, identidad y resguardo (Art. 4)"></textarea>
+        </div>
+      </form>
+      <form id="modulo3Form">
+        <legend>Información Adicional (Ley II - N.º 16)</legend>
+        <div class="form-row">
+          <div><label>Nombre Completo del NNA *</label><input id="nombreCompletoNNA" required></div>
+          <div><label>Nacionalidad</label><input id="nacionalidadNNA"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Identidad cultural / Idioma de origen</label><input id="identidadCulturalNNA"></div>
+          <div><label>Opinión del NNA</label><textarea id="opinionNNA" placeholder="Registrar la opinión y deseos del menor sobre el caso."></textarea></div>
+        </div>
+      </form>
+      <form id="modulo4Form">
+        <legend>Información Familiar (Ley II - N.º 16)</legend>
+        <div class="form-row">
+          <div><label>Nombre de la madre</label><input id="nombreMadre"></div>
+          <div><label>Nombre del padre</label><input id="nombrePadre"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Estado del Vínculo Familiar</label>
+            <select id="vinculoFamiliar">
+              <option value=""></option>
+              <option>Grupo Familiar de Origen</option>
+              <option>Familia Ampliada</option>
+              <option>Hogar Alternativo</option>
+            </select>
           </div>
-
-          <div class="form-row full">
-            <label>Etapa del proceso (Art. 14)</label>
-            <div class="chips">
-              <label class="chip"><input type="checkbox" id="etapaConvocatoria"> Convocatoria</label>
-              <label class="chip"><input type="checkbox" id="etapaEvaluacion"> Evaluación y selección</label>
-              <label class="chip"><input type="checkbox" id="etapaCapacitacion"> Capacitación</label>
-              <label class="chip"><input type="checkbox" id="etapaInscripcion"> Inscripción RUFAAFA</label>
-              <label class="chip"><input type="checkbox" id="etapaPlan"> Plan de intervención</label>
-            </div>
+          <div><label>Observaciones familiares</label><textarea id="obsFamilia" placeholder="Detalles de la convivencia, etc."></textarea></div>
+        </div>
+      </form>
+      <form id="modulo5Form">
+        <legend>Medidas de Protección y Seguimiento (Ley II - N.º 16)</legend>
+        <div class="form-row full">
+          <label>Medidas de Protección Aplicadas</label>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" id="medidaGuiaAsistencia"> Guía y asistencia a la familia</label>
+            <label class="chip"><input type="checkbox" id="medidaAsistenciaSalud"> Asistencia a tratamientos médicos/psicológicos</label>
+            <label class="chip"><input type="checkbox" id="medidaInscripcionEscolar"> Apoyo para la inscripción escolar</label>
+            <label class="chip"><input type="checkbox" id="medidaExclusionAgresor"> Exclusión del agresor de la vivienda</label>
+            <label class="chip"><input type="checkbox" id="medidaOtros"> Otras medidas (especificar)</label>
           </div>
-
-          <div class="form-row full">
-            <label>Plan de intervención</label>
-            <textarea id="planIntervencion" placeholder="Objetivos, acciones, roles (Art.14.5)"></textarea>
-          </div>
-
-          <div class="form-row">
-            <div><label>Egreso (si aplica)</label>
-              <select id="causalEgreso">
-                <option value=""></option>
-                <option>Revinculación con familia de origen</option>
-                <option>Vinculación con familia extensa</option>
-                <option>Adoptabilidad y guarda con fines de adopción</option>
-                <option>Mayoría de edad</option>
-              </select>
-            </div>
-            <div><label>Fecha de egreso</label><input type="date" id="fechaEgreso"></div>
-          </div>
-
-          <div class="form-row full">
-            <label>Observaciones sobre derecho a ser oído / identidad / integridad</label>
-            <textarea id="obsDerechos" placeholder="Registro de escucha activa, identidad y resguardo (Art. 4)"></textarea>
-          </div>
-        </fieldset>
-
-        <fieldset class="fieldset">
-          <legend>Requisitos RUFAAFA (Art. 18)</legend>
-          <div class="subgrid-3">
-            <label class="chip"><input type="checkbox" id="reqDomicilio"> Domicilio en Misiones (≥ 2 años)</label>
-            <label class="chip"><input type="checkbox" id="reqEdad"> Mayor de 25 años</label>
-            <label class="chip"><input type="checkbox" id="reqDiferenciaEdad"> Diferencia ≥ 15 años con el NNA</label>
-            <label class="chip"><input type="checkbox" id="reqPenales"> Cert. antecedentes penales</label>
-            <label class="chip"><input type="checkbox" id="reqAlimentaria"> Libre deuda alimentaria</label>
-            <label class="chip"><input type="checkbox" id="reqPsicofisico"> Aptitud psicofísica (sector público)</label>
-            <label class="chip"><input type="checkbox" id="reqIngresos"> Constancia/ DDJJ de ingresos</label>
-            <label class="chip"><input type="checkbox" id="reqVivienda"> Acredita vivienda (propia/locación)</label>
-            <label class="chip"><input type="checkbox" id="reqCapacitacion"> Capacitaciones realizadas</label>
-            <label class="chip"><input type="checkbox" id="reqAcuerdo"> Acuerdo de aceptación firmado</label>
-          </div>
-        </fieldset>
-
-        <fieldset class="fieldset">
-          <legend>Inhabilidades (Art. 19)</legend>
-          <div class="subgrid-3">
-            <label class="chip"><input type="checkbox" id="inhDelitos"> Sin condena por delitos dolosos</label>
-            <label class="chip"><input type="checkbox" id="inhMedidas"> Sin medidas cautelares vigentes (L. XIV-6 / IV-68)</label>
-            <label class="chip"><input type="checkbox" id="inhRespParental"> Sin privación/suspensión de resp. parental</label>
-            <label class="chip"><input type="checkbox" id="inhTutela"> Sin remoción de tutela por mal desempeño</label>
-          </div>
-        </fieldset>
-
+        </div>
+        <div class="form-row full">
+          <label>Observaciones y Plazo de la Medida</label>
+          <textarea id="obsMedida" placeholder="Documentar la efectividad de la medida, su duración y las causas que la motivaron."></textarea>
+        </div>
+      </form>
+      <form id="modulo6Form">
+        <legend>Garantías Procesales (Ley II - N.º 16)</legend>
+        <div class="form-row">
+          <div><label>Asistencia Letrada (nombre del abogado)</label><input id="asistenciaLetrada"></div>
+          <div><label>Acto Infractor Atribuido</label><input id="actoInfractor"></div>
+        </div>
+        <div class="form-row full">
+          <label>Información a la familia</label>
+          <textarea id="infoFamilia" placeholder="Detalles sobre cómo y cuándo se informó a la familia sobre la situación."></textarea>
+        </div>
+      </form>
+      <form id="modulo7Form">
+        <legend>Requisitos RUFAAFA (Ley II - N.º 36)</legend>
+        <div class="subgrid-3">
+          <label class="chip"><input type="checkbox" id="reqDomicilio"> Domicilio en Misiones (≥ 2 años)</label>
+          <label class="chip"><input type="checkbox" id="reqEdad"> Mayor de 25 años</label>
+          <label class="chip"><input type="checkbox" id="reqDiferenciaEdad"> Diferencia ≥ 15 años con el NNA</label>
+          <label class="chip"><input type="checkbox" id="reqPenales"> Cert. antecedentes penales</label>
+          <label class="chip"><input type="checkbox" id="reqAlimentaria"> Libre deuda alimentaria</label>
+          <label class="chip"><input type="checkbox" id="reqPsicofisico"> Aptitud psicofísica (sector público)</label>
+          <label class="chip"><input type="checkbox" id="reqIngresos"> Constancia/ DDJJ de ingresos</label>
+          <label class="chip"><input type="checkbox" id="reqVivienda"> Acredita vivienda (propia/locación)</label>
+          <label class="chip"><input type="checkbox" id="reqCapacitacion"> Capacitaciones realizadas</label>
+          <label class="chip"><input type="checkbox" id="reqAcuerdo"> Acuerdo de aceptación firmado</label>
+        </div>
+      </form>
+      <form id="modulo8Form">
+        <legend>Inhabilidades (Ley II - N.º 36)</legend>
+        <div class="subgrid-3">
+          <label class="chip"><input type="checkbox" id="inhDelitos"> Sin condena por delitos dolosos</label>
+          <label class="chip"><input type="checkbox" id="inhMedidas"> Sin medidas cautelares vigentes (L. XIV-6 / IV-68)</label>
+          <label class="chip"><input type="checkbox" id="inhRespParental"> Sin privación/suspensión de resp. parental</label>
+          <label class="chip"><input type="checkbox" id="inhTutela"> Sin remoción de tutela por mal desempeño</label>
+        </div>
+      </form>
+      <form id="modulo9Form">
+        <legend>Expediente y Seguimiento</legend>
         <div class="form-row">
           <div><label>Expediente de referencia</label>
             <select id="expedienteReferencia"><option value="">-- Seleccione --</option></select>
@@ -269,22 +383,12 @@
             <select id="estadoCaso"><option>Abierto</option><option>En Proceso</option><option>Cerrado</option></select>
           </div>
         </div>
-
         <div class="form-row full"><label>Seguimiento inicial</label><textarea id="seguimientoInicial" placeholder="Anote el primer seguimiento o acción..."></textarea></div>
-
         <div class="form-row">
           <div><label>Lugar de institucionalización</label><textarea id="lugarInstitucionalizacion" placeholder="Si corresponde"></textarea></div>
-          <div><label>Contacto institucionalización</label><textarea id="contactoInstitucionalizacion" placeholder="Si corresponde"></textarea></div>
-        </div>
-
-        <div class="form-row">
-          <div class="inline">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <button type="button" class="btn btn-secondary" onclick="imprimirSeccion('registro')">Imprimir</button>
-          </div>
+          <div><label>Contacto institucionalizacion</label><textarea id="contactoInstitucionalizacion" placeholder="Si corresponde"></textarea></div>
         </div>
       </form>
-      <p id="validacionMsg" class="small"></p>
     </div>
 
     <div id="casos" class="tab-content">
@@ -329,6 +433,18 @@
       <button class="btn btn-danger" onclick="eliminarCaso(casoActual?.id)">Eliminar Caso</button>
     </div>
   </div></div>
+  
+  <div id="dynamicModal" class="modal"><div class="modal-card">
+    <div class="modal-head">
+      <h3 id="modalTitle"></h3>
+      <div class="inline">
+        <button class="btn btn-secondary" onclick="imprimirSeccion('modalFormBody')">Imprimir</button>
+        <button class="btn btn-primary" onclick="guardarSeccionTemporal()">Guardar</button>
+        <button class="btn btn-danger" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modalFormBody"></div>
+  </div></div>
 
   <div id="modalExpediente" class="modal"><div class="modal-card">
     <div class="modal-head"><h3>Detalle de Expediente</h3>
@@ -361,9 +477,9 @@
     // Firebase App 2: causas-defensoria (expedientes externos - Firestore)
     const firebaseConfig = {
       apiKey: "AIzaSyBt6X0u0BpiNPcV2SNPrN-spCmjl2AhZaA",
-  authDomain: "causas-defensoria.firebaseapp.com",
-  databaseURL: "https://causas-defensoria-default-rtdb.firebaseio.com",
-  projectId: "causas-defensoria",
+      authDomain: "causas-defensoria.firebaseapp.com",
+      databaseURL: "https://causas-defensoria-default-rtdb.firebaseio.com",
+      projectId: "causas-defensoria",
     };
     const app2 = initializeApp(firebaseConfig, "app2");
     const db2 = getFirestore(app2);
@@ -371,24 +487,17 @@
     // ===== Estado =====
     let casos=[], casosFiltrados=[], casoActual=null, editandoId=null, lastEditedId=null;
     let causasIndex = {};
+    let tempCasoData = {};
+    let currentModalId = '';
 
     // ===== Refs DOM =====
-    const form=$('casoForm'), formTitle=$('formTitle');
-    const nombreNNA=$('nombreNNA'), dniNNA=$('dniNNA'), fechaNacimientoNNA=$('fechaNacimientoNNA'), generoNNA=$('generoNNA'),
-          centroVida=$('centroVida'), vinculosFraternos=$('vinculosFraternos'), situacionVulneracion=$('situacionVulneracion');
-    const tipoMedida=$('tipoMedida'), autoridadInterviniente=$('autoridadInterviniente'), fechaMedida=$('fechaMedida'), fechaIngresoSAF=$('fechaIngresoSAF'), tipoFamilia=$('tipoFamilia'), rufAAFA=$('rufAAFA');
-    const faNombre=$('faNombre'), faDni=$('faDni'), faFechaNac=$('faFechaNac'), faDomicilio=$('faDomicilio'), faContacto=$('faContacto'), faResidenciaAnos=$('faResidenciaAnos');
-    const edadNNAInfo=$('edadNNAInfo'), edadFAInfo=$('edadFAInfo'), difEdadInfo=$('difEdadInfo'), residenciaInfo=$('residenciaInfo');
-    const etapaConvocatoria=$('etapaConvocatoria'), etapaEvaluacion=$('etapaEvaluacion'), etapaCapacitacion=$('etapaCapacitacion'), etapaInscripcion=$('etapaInscripcion'), etapaPlan=$('etapaPlan'), planIntervencion=$('planIntervencion');
-    const causalEgreso=$('causalEgreso'), fechaEgreso=$('fechaEgreso'), obsDerechos=$('obsDerechos');
-    const reqDomicilio=$('reqDomicilio'), reqEdad=$('reqEdad'), reqDiferenciaEdad=$('reqDiferenciaEdad'), reqPenales=$('reqPenales'), reqAlimentaria=$('reqAlimentaria'), reqPsicofisico=$('reqPsicofisico'), reqIngresos=$('reqIngresos'), reqVivienda=$('reqVivienda'), reqCapacitacion=$('reqCapacitacion'), reqAcuerdo=$('reqAcuerdo');
-    const inhDelitos=$('inhDelitos'), inhMedidas=$('inhMedidas'), inhRespParental=$('inhRespParental'), inhTutela=$('inhTutela');
-    const seguimientoInicial=$('seguimientoInicial'), estadoCaso=$('estadoCaso'), lugarInstitucionalizacion=$('lugarInstitucionalizacion'), contactoInstitucionalizacion=$('contactoInstitucionalizacion');
+    const formTitle=$('formTitle');
     const expedienteSelect=$('expedienteReferencia'), expedienteInfo=$('expedienteInfo');
     const searchInput=$('searchInput'), estadoFilter=$('estadoFilter'), tablaCasos=$('tablaCasos');
     const totalCasos=$('totalCasos'), casosAbiertos=$('casosAbiertos'), casosProceso=$('casosProceso'), casosCerrados=$('casosCerrados'), listaTramite=$('listaTramite');
     const sidebarSeguimiento=$('sidebarSeguimiento'), sidebarTitle=$('sidebarTitle'), timeline=$('timeline'), nuevoSeguimiento=$('nuevoSeguimiento');
     const modalCaso=$('modalCaso'), modalCasoBody=$('modalCasoBody');
+    const dynamicModal = $('dynamicModal'), modalFormBody = $('modalFormBody'), modalTitle = $('modalTitle');
     const validacionMsg=$('validacionMsg');
 
     // ===== Utilidades =====
@@ -405,47 +514,138 @@
       el.classList.remove("badge-ok","badge-warn","badge-danger");
       if(level) el.classList.add(level);
     }
-    function actualizarAutoChecks(){
-      const edadNNA = calcEdad(fechaNacimientoNNA.value);
-      const edadFA  = calcEdad(faFechaNac.value);
-      if(edadNNA!=null) setBadge(edadNNAInfo, `Edad NNA: ${edadNNA} años`, "badge-ok"); else setBadge(edadNNAInfo, "Edad NNA: —");
-      if(edadFA!=null)  setBadge(edadFAInfo, `Edad referente: ${edadFA} años`, edadFA>=25?"badge-ok":"badge-danger"); else setBadge(edadFAInfo, "Edad referente: —");
-
-      if(edadFA!=null){ reqEdad.checked = edadFA>=25; }
-      if(edadFA!=null && edadNNA!=null){
-        const diff = edadFA - edadNNA;
-        const ok = diff>=15;
-        reqDiferenciaEdad.checked = ok;
-        setBadge(difEdadInfo, `Diferencia con NNA: ${diff} años`, ok?"badge-ok":"badge-danger");
-      }else{
-        setBadge(difEdadInfo, "Diferencia con NNA: —");
-      }
-      const anos = parseInt(faResidenciaAnos.value,10);
-      if(!isNaN(anos)){
-        reqDomicilio.checked = anos>=2;
-        setBadge(residenciaInfo, `Residencia: ${anos} años`, anos>=2?"badge-ok":"badge-warn");
-      }else{
-        setBadge(residenciaInfo, "Residencia: —");
-      }
-      const faltas = [];
-      if(edadFA!=null && edadFA<25) faltas.push("El referente debe ser ≥ 25 años.");
-      if(edadFA!=null && edadNNA!=null && (edadFA-edadNNA)<15) faltas.push("La diferencia de edad con el NNA debe ser ≥ 15 años.");
-      if(!isNaN(anos) && anos<2) faltas.push("Residencia en Misiones debe ser ≥ 2 años.");
-      validacionMsg.textContent = faltas.length? "⚠️ " + faltas.join(" ") : "";
-    }
-
+    
     // ===== Eventos =====
     document.addEventListener("DOMContentLoaded", async ()=>{
       await Promise.all([cargarExpedientes(), cargarCasos()]);
-      [fechaNacimientoNNA, faFechaNac, faResidenciaAnos].forEach(el=> el.addEventListener('input', actualizarAutoChecks));
     });
-    form.addEventListener("submit", guardarCaso);
-    expedienteSelect.addEventListener("change", ()=>{
-      const numeroCausa = expedienteSelect.value;
-      if(!numeroCausa){ expedienteInfo.textContent=""; return; }
-      const c = causasIndex[numeroCausa];
-      expedienteInfo.textContent = c ? `Seleccionado: ${c.numCausa || numeroCausa} — ${c.caratula || ''}` : "";
-    });
+    
+    // ===== Lógica de Modales Dinámicos =====
+    window.openModal = (id)=>{
+      currentModalId = id;
+      modalFormBody.innerHTML = '';
+      const form = $(id + 'Form');
+      if (!form) return;
+
+      modalTitle.textContent = form.querySelector('legend')?.textContent || 'Formulario';
+      const clonedForm = form.cloneNode(true);
+      clonedForm.style.display = 'block';
+      modalFormBody.appendChild(clonedForm);
+      dynamicModal.classList.add('open');
+      
+      const formFields = modalFormBody.querySelector('form').elements;
+      for (let key in tempCasoData) {
+        if (formFields[key]) {
+          if (formFields[key].type === 'checkbox') {
+            formFields[key].checked = tempCasoData[key];
+          } else {
+            formFields[key].value = tempCasoData[key];
+          }
+        }
+      }
+
+      // Re-asociar listeners a campos dinámicos
+      ['fechaNacimientoNNA', 'faFechaNac', 'faResidenciaAnos'].forEach(fieldId => {
+        const el = clonedForm.querySelector('#' + fieldId);
+        if(el) el.addEventListener('input', updateModalBadges);
+      });
+      if(clonedForm.querySelector('#expedienteReferencia')) {
+          const select = clonedForm.querySelector('#expedienteReferencia');
+          select.innerHTML = expedienteSelect.innerHTML;
+          select.value = tempCasoData.expedienteReferencia || '';
+          select.addEventListener("change", (e)=>{
+              const numeroCausa = e.target.value;
+              const info = clonedForm.querySelector('#expedienteInfo');
+              if(!numeroCausa){ info.textContent=""; return; }
+              const c = causasIndex[numeroCausa];
+              info.textContent = c ? `Seleccionado: ${c.numCausa || numeroCausa} — ${c.caratula || ''}` : "";
+          });
+          const info = clonedForm.querySelector('#expedienteInfo');
+          if(select.value) {
+            const c = causasIndex[select.value];
+            info.textContent = c ? `Seleccionado: ${c.numCausa || select.value} — ${c.caratula || ''}` : "";
+          }
+      }
+      updateModalBadges();
+    };
+    
+    window.closeModal = ()=>{
+      dynamicModal.classList.remove('open');
+      modalFormBody.innerHTML = '';
+    };
+
+    window.guardarSeccionTemporal = ()=>{
+      const formFields = modalFormBody.querySelector('form').elements;
+      let sectionData = {};
+      for(let i = 0; i < formFields.length; i++){
+        const field = formFields[i];
+        if (field.id) {
+          if (field.type === 'checkbox') {
+            sectionData[field.id] = field.checked;
+          } else {
+            sectionData[field.id] = field.value;
+          }
+        }
+      }
+      Object.assign(tempCasoData, sectionData);
+      closeModal();
+      document.getElementById('badge-' + currentModalId).style.display = 'block';
+    };
+
+    function updateModalBadges() {
+      const form = modalFormBody.querySelector('form');
+      if (!form) return;
+      const fechaNacNNA = form.querySelector('#fechaNacimientoNNA')?.value;
+      const fechaNacFA = form.querySelector('#faFechaNac')?.value;
+      const residenciaAnos = form.querySelector('#faResidenciaAnos')?.value;
+      
+      const edadNNA = calcEdad(fechaNacNNA);
+      const edadFA = calcEdad(fechaNacFA);
+      const anos = parseInt(residenciaAnos, 10);
+      
+      const edadNNAInfoEl = form.querySelector('#edadNNAInfo');
+      if (edadNNAInfoEl) setBadge(edadNNAInfoEl, `Edad NNA: ${edadNNA} años`, edadNNA != null ? "badge-ok" : "");
+      
+      const edadFAInfoEl = form.querySelector('#edadFAInfo');
+      if (edadFAInfoEl) setBadge(edadFAInfoEl, `Edad referente: ${edadFA} años`, edadFA != null && edadFA >= 25 ? "badge-ok" : "badge-danger");
+      
+      const difEdadInfoEl = form.querySelector('#difEdadInfo');
+      if (difEdadInfoEl) {
+        if (edadNNA != null && edadFA != null) {
+          const diff = edadFA - edadNNA;
+          setBadge(difEdadInfoEl, `Diferencia con NNA: ${diff} años`, diff >= 15 ? "badge-ok" : "badge-danger");
+        } else {
+          setBadge(difEdadInfoEl, "Diferencia con NNA: —");
+        }
+      }
+      
+      const residenciaInfoEl = form.querySelector('#residenciaInfo');
+      if (residenciaInfoEl) {
+        if (!isNaN(anos)) {
+          setBadge(residenciaInfoEl, `Residencia: ${anos} años`, anos >= 2 ? "badge-ok" : "badge-warn");
+        } else {
+          setBadge(residenciaInfoEl, "Residencia: —");
+        }
+      }
+      
+      // Update checkbox states for requirements
+      const reqEdad = form.querySelector('#reqEdad');
+      if (reqEdad && edadFA != null) reqEdad.checked = edadFA >= 25;
+      
+      const reqDiferenciaEdad = form.querySelector('#reqDiferenciaEdad');
+      if (reqDiferenciaEdad && edadNNA != null && edadFA != null) reqDiferenciaEdad.checked = (edadFA - edadNNA) >= 15;
+      
+      const reqDomicilio = form.querySelector('#reqDomicilio');
+      if (reqDomicilio && !isNaN(anos)) reqDomicilio.checked = anos >= 2;
+    }
+
+    window.resetForm = ()=>{
+      tempCasoData = {};
+      document.querySelectorAll('.reg-card .badge').forEach(el => el.style.display = 'none');
+      if(expedienteSelect) expedienteSelect.value = "";
+      if(expedienteInfo) expedienteInfo.textContent = "";
+      closeModal();
+    };
 
     // ===== Cargar expedientes desde Firestore =====
     async function cargarExpedientes() {
@@ -457,85 +657,108 @@
         
         querySnapshot.forEach((doc) => {
           const val = doc.data();
-         if (val && val.numCausa) {
-    causasIndex[val.numCausa] = { ...val, firebaseId: doc.id };
-    
-    const opt = document.createElement("option");
-    opt.value = val.numCausa;
-    opt.textContent = `Causa ${val.numCausa}` + (val.caratula ? ` – ${val.caratula}` : "");
-    expedienteSelect.appendChild(opt);
+          if (val && val.numCausa) {
+            causasIndex[val.numCausa] = { ...val, firebaseId: doc.id };
+            const opt = document.createElement("option");
+            opt.value = val.numCausa;
+            opt.textContent = `Causa ${val.numCausa}` + (val.caratula ? ` – ${val.caratula}` : "");
+            expedienteSelect.appendChild(opt);
           }
         });
       } catch (error) {
-          console.error("Error al cargar expedientes desde Firestore:", error);
-          expedienteSelect.innerHTML = "<option value=''>-- Error al cargar --</option>";
+        console.error("Error al cargar expedientes desde Firestore:", error);
+        expedienteSelect.innerHTML = "<option value=''>-- Error al cargar --</option>";
       }
     }
 
     // ===== Guardar / Actualizar caso (RTDB app1:/casos) =====
-    async function guardarCaso(e){
-      e.preventDefault();
-      const edadN = calcEdad(fechaNacimientoNNA.value);
-      const edadF = calcEdad(faFechaNac.value);
-      const anosRes = parseInt(faResidenciaAnos.value,10);
+    window.guardarCaso = async (e)=>{
+      if(!tempCasoData.nombreNNA || !tempCasoData.nombreCompletoNNA){
+        alert("Los campos de nombre del NNA son obligatorios. Por favor, complete los módulos 'Datos del NNA' y 'Información Adicional'.");
+        return;
+      }
+
+      const edadN = calcEdad(tempCasoData.fechaNacimientoNNA);
+      const edadF = calcEdad(tempCasoData.faFechaNac);
+      const anosRes = parseInt(tempCasoData.faResidenciaAnos,10);
       if(edadF!=null && edadF<25){ alert("No se puede guardar: el referente debe tener 25 años o más (Art. 18)."); return; }
-      if(edadN!=null && edadF!=null && (edadF-edadN)<15){ alert("No se puede guardar: la diferencia entre el referente y el NNA debe ser de 15 años o más (Art. 18)."); return; }
+      if(edadN!=null && edadF!=null && (edadF-edadN)<15){ alert("No se puede guardar: la diferencia de edad con el NNA debe ser de 15 años o más (Art. 18)."); return; }
       if(!isNaN(anosRes) && anosRes<2){ alert("No se puede guardar: la residencia en Misiones debe ser de 2 años o más (Art. 18)."); return; }
 
       const etapas = {
-        convocatoria: !!etapaConvocatoria.checked,
-        evaluacion: !!etapaEvaluacion.checked,
-        capacitacion: !!etapaCapacitacion.checked,
-        inscripcion: !!etapaInscripcion.checked,
-        plan: !!etapaPlan.checked
+        convocatoria: !!tempCasoData.etapaConvocatoria,
+        evaluacion: !!tempCasoData.etapaEvaluacion,
+        capacitacion: !!tempCasoData.etapaCapacitacion,
+        inscripcion: !!tempCasoData.etapaInscripcion,
+        plan: !!tempCasoData.etapaPlan
       };
       const requisitos = {
-        reqDomicilio: !!reqDomicilio.checked,
-        reqEdad: !!reqEdad.checked,
-        reqDiferenciaEdad: !!reqDiferenciaEdad.checked,
-        reqPenales: !!reqPenales.checked,
-        reqAlimentaria: !!reqAlimentaria.checked,
-        reqPsicofisico: !!reqPsicofisico.checked,
-        reqIngresos: !!reqIngresos.checked,
-        reqVivienda: !!reqVivienda.checked,
-        reqCapacitacion: !!reqCapacitacion.checked,
-        reqAcuerdo: !!reqAcuerdo.checked
+        reqDomicilio: !!tempCasoData.reqDomicilio,
+        reqEdad: !!tempCasoData.reqEdad,
+        reqDiferenciaEdad: !!tempCasoData.reqDiferenciaEdad,
+        reqPenales: !!tempCasoData.reqPenales,
+        reqAlimentaria: !!tempCasoData.reqAlimentaria,
+        reqPsicofisico: !!tempCasoData.reqPsicofisico,
+        reqIngresos: !!tempCasoData.reqIngresos,
+        reqVivienda: !!tempCasoData.reqVivienda,
+        reqCapacitacion: !!tempCasoData.reqCapacitacion,
+        reqAcuerdo: !!tempCasoData.reqAcuerdo
       };
       const inhabilidades = {
-        inhDelitos: !!inhDelitos.checked,
-        inhMedidas: !!inhMedidas.checked,
-        inhRespParental: !!inhRespParental.checked,
-        inhTutela: !!inhTutela.checked
+        inhDelitos: !!tempCasoData.inhDelitos,
+        inhMedidas: !!tempCasoData.inhMedidas,
+        inhRespParental: !!tempCasoData.inhRespParental,
+        inhTutela: !!tempCasoData.inhTutela
       };
-
+      const medidas = {
+        guiaAsistencia: !!tempCasoData.medidaGuiaAsistencia,
+        asistenciaSalud: !!tempCasoData.medidaAsistenciaSalud,
+        inscripcionEscolar: !!tempCasoData.medidaInscripcionEscolar,
+        exclusionAgresor: !!tempCasoData.medidaExclusionAgresor,
+        otros: !!tempCasoData.medidaOtros
+      }
+      
       const data = {
-        nombreNNA: nombreNNA.value,
-        dniNNA: dniNNA.value,
-        fechaNacimientoNNA: fechaNacimientoNNA.value,
-        generoNNA: generoNNA.value,
-        centroVida: centroVida.value,
-        vinculosFraternos: vinculosFraternos.value,
-        situacionVulneracion: situacionVulneracion.value,
-        tipoMedida: tipoMedida.value,
-        autoridadInterviniente: autoridadInterviniente.value,
-        fechaMedida: fechaMedida.value,
-        fechaIngresoSAF: fechaIngresoSAF.value,
-        tipoFamilia: tipoFamilia.value,
-        rufAAFA: rufAAFA.value,
-        faNombre: faNombre.value,
-        faDni: faDni.value,
-        faFechaNac: faFechaNac.value,
-        faDomicilio: faDomicilio.value,
-        faContacto: faContacto.value,
-        faResidenciaAnos: faResidenciaAnos.value,
-        etapas, planIntervencion: planIntervencion.value,
-        causalEgreso: causalEgreso.value, fechaEgreso: fechaEgreso.value,
-        obsDerechos: obsDerechos.value,
+        nombreNNA: tempCasoData.nombreNNA,
+        dniNNA: tempCasoData.dniNNA,
+        fechaNacimientoNNA: tempCasoData.fechaNacimientoNNA,
+        generoNNA: tempCasoData.generoNNA,
+        centroVida: tempCasoData.centroVida,
+        vinculosFraternos: tempCasoData.vinculosFraternos,
+        situacionVulneracion: tempCasoData.situacionVulneracion,
+        tipoMedida: tempCasoData.tipoMedida,
+        autoridadInterviniente: tempCasoData.autoridadInterviniente,
+        fechaMedida: tempCasoData.fechaMedida,
+        fechaIngresoSAF: tempCasoData.fechaIngresoSAF,
+        tipoFamilia: tempCasoData.tipoFamilia,
+        rufAAFA: tempCasoData.rufAAFA,
+        faNombre: tempCasoData.faNombre,
+        faDni: tempCasoData.faDni,
+        faFechaNac: tempCasoData.faFechaNac,
+        faDomicilio: tempCasoData.faDomicilio,
+        faContacto: tempCasoData.faContacto,
+        faResidenciaAnos: tempCasoData.faResidenciaAnos,
+        etapas, planIntervencion: tempCasoData.planIntervencion,
+        causalEgreso: tempCasoData.causalEgreso, fechaEgreso: tempCasoData.fechaEgreso,
+        obsDerechos: tempCasoData.obsDerechos,
         requisitos, inhabilidades,
-        estadoCaso: estadoCaso.value,
-        expedienteReferencia: expedienteSelect.value || "",
-        lugarInstitucionalizacion: lugarInstitucionalizacion.value,
-        contactoInstitucionalizacion: contactoInstitucionalizacion.value
+        estadoCaso: tempCasoData.estadoCaso,
+        expedienteReferencia: tempCasoData.expedienteReferencia || "",
+        lugarInstitucionalizacion: tempCasoData.lugarInstitucionalizacion,
+        contactoInstitucionalizacion: tempCasoData.contactoInstitucionalizacion,
+        nombreCompletoNNA: tempCasoData.nombreCompletoNNA,
+        nacionalidadNNA: tempCasoData.nacionalidadNNA,
+        identidadCulturalNNA: tempCasoData.identidadCulturalNNA,
+        opinionNNA: tempCasoData.opinionNNA,
+        nombreMadre: tempCasoData.nombreMadre,
+        nombrePadre: tempCasoData.nombrePadre,
+        vinculoFamiliar: tempCasoData.vinculoFamiliar,
+        obsFamilia: tempCasoData.obsFamilia,
+        medidasAplicadas: medidas,
+        obsMedida: tempCasoData.obsMedida,
+        asistenciaLetrada: tempCasoData.asistenciaLetrada,
+        actoInfractor: tempCasoData.actoInfractor,
+        infoFamilia: tempCasoData.infoFamilia
       };
 
       if(editandoId){
@@ -551,15 +774,13 @@
         const nuevo = {
           ...data,
           fechaRegistro: formatFecha(new Date()),
-          seguimientos: seguimientoInicial.value ? [{fecha:formatFechaHora(new Date()), texto: seguimientoInicial.value}] : [],
+          seguimientos: tempCasoData.seguimientoInicial ? [{fecha:formatFechaHora(new Date()), texto: tempCasoData.seguimientoInicial}] : [],
           historial: [{fecha:formatFechaHora(new Date()), accion:"Creación del caso"}]
         };
         const res = await push(ref(rtdb1,"casos"), nuevo);
         lastEditedId = res.key;
       }
-      form.reset();
-      expedienteInfo.textContent = "";
-      actualizarAutoChecks();
+      resetForm();
       await cargarCasos();
       showTab('casos');
     }
@@ -644,44 +865,27 @@
     window.editarCaso = (id)=>{
       const c = casos.find(x=>x.id===id); if(!c) return;
       editandoId = id; formTitle.textContent = "Editar Caso";
-      nombreNNA.value = c.nombreNNA || ""; dniNNA.value = c.dniNNA || "";
-      fechaNacimientoNNA.value = c.fechaNacimientoNNA || ""; generoNNA.value = c.generoNNA || "";
-      centroVida.value = c.centroVida || ""; vinculosFraternos.value = c.vinculosFraternos || "";
-      situacionVulneracion.value = c.situacionVulneracion || "";
-      tipoMedida.value = c.tipoMedida || ""; autoridadInterviniente.value = c.autoridadInterviniente || "";
-      fechaMedida.value = c.fechaMedida || ""; fechaIngresoSAF.value = c.fechaIngresoSAF || "";
-      tipoFamilia.value = c.tipoFamilia || ""; rufAAFA.value = c.rufAAFA || "";
-      faNombre.value = c.faNombre || ""; faDni.value = c.faDni || ""; faFechaNac.value = c.faFechaNac || "";
-      faDomicilio.value = c.faDomicilio || ""; faContacto.value = c.faContacto || "";
-      faResidenciaAnos.value = c.faResidenciaAnos || "";
-      etapaConvocatoria.checked = !!(c.etapas?.convocatoria);
-      etapaEvaluacion.checked = !!(c.etapas?.evaluacion);
-      etapaCapacitacion.checked = !!(c.etapas?.capacitacion);
-      etapaInscripcion.checked = !!(c.etapas?.inscripcion);
-      etapaPlan.checked = !!(c.etapas?.plan);
-      planIntervencion.value = c.planIntervencion || "";
-      causalEgreso.value = c.causalEgreso || ""; fechaEgreso.value = c.fechaEgreso || "";
-      obsDerechos.value = c.obsDerechos || "";
-      reqDomicilio.checked = !!(c.requisitos?.reqDomicilio);
-      reqEdad.checked = !!(c.requisitos?.reqEdad);
-      reqDiferenciaEdad.checked = !!(c.requisitos?.reqDiferenciaEdad);
-      reqPenales.checked = !!(c.requisitos?.reqPenales);
-      reqAlimentaria.checked = !!(c.requisitos?.reqAlimentaria);
-      reqPsicofisico.checked = !!(c.requisitos?.reqPsicofisico);
-      reqIngresos.checked = !!(c.requisitos?.reqIngresos);
-      reqVivienda.checked = !!(c.requisitos?.reqVivienda);
-      reqCapacitacion.checked = !!(c.requisitos?.reqCapacitacion);
-      reqAcuerdo.checked = !!(c.requisitos?.reqAcuerdo);
-      inhDelitos.checked = !!(c.inhabilidades?.inhDelitos);
-      inhMedidas.checked = !!(c.inhabilidades?.inhMedidas);
-      inhRespParental.checked = !!(c.inhabilidades?.inhRespParental);
-      inhTutela.checked = !!(c.inhabilidades?.inhTutela);
-      estadoCaso.value = c.estadoCaso || "Abierto";
-      expedienteSelect.value = c.expedienteReferencia || "";
-      expedienteInfo.textContent = c.expedienteReferencia ? `Seleccionado: ${getExpDisplay(c.expedienteReferencia)}` : "";
-      lugarInstitucionalizacion.value = c.lugarInstitucionalizacion || "";
-      contactoInstitucionalizacion.value = c.contactoInstitucionalizacion || "";
-      actualizarAutoChecks();
+      tempCasoData = {
+        nombreNNA: c.nombreNNA || "", dniNNA: c.dniNNA || "", fechaNacimientoNNA: c.fechaNacimientoNNA || "", generoNNA: c.generoNNA || "",
+        centroVida: c.centroVida || "", vinculosFraternos: c.vinculosFraternos || "", situacionVulneracion: c.situacionVulneracion || "",
+        tipoMedida: c.tipoMedida || "", autoridadInterviniente: c.autoridadInterviniente || "", fechaMedida: c.fechaMedida || "", fechaIngresoSAF: c.fechaIngresoSAF || "",
+        tipoFamilia: c.tipoFamilia || "", rufAAFA: c.rufAAFA || "", faNombre: c.faNombre || "", faDni: c.faDni || "", faFechaNac: c.faFechaNac || "",
+        faDomicilio: c.faDomicilio || "", faContacto: c.faContacto || "", faResidenciaAnos: c.faResidenciaAnos || "",
+        etapaConvocatoria: !!(c.etapas?.convocatoria), etapaEvaluacion: !!(c.etapas?.evaluacion), etapaCapacitacion: !!(c.etapas?.capacitacion),
+        etapaInscripcion: !!(c.etapas?.inscripcion), etapaPlan: !!(c.etapas?.plan), planIntervencion: c.planIntervencion || "",
+        causalEgreso: c.causalEgreso || "", fechaEgreso: c.fechaEgreso || "", obsDerechos: c.obsDerechos || "",
+        reqDomicilio: !!(c.requisitos?.reqDomicilio), reqEdad: !!(c.requisitos?.reqEdad), reqDiferenciaEdad: !!(c.requisitos?.reqDiferenciaEdad),
+        reqPenales: !!(c.requisitos?.reqPenales), reqAlimentaria: !!(c.requisitos?.reqAlimentaria), reqPsicofisico: !!(c.requisitos?.reqPsicofisico),
+        reqIngresos: !!(c.requisitos?.reqIngresos), reqVivienda: !!(c.requisitos?.reqVivienda), reqCapacitacion: !!(c.requisitos?.reqCapacitacion),
+        reqAcuerdo: !!(c.requisitos?.reqAcuerdo), inhDelitos: !!(c.inhabilidades?.inhDelitos), inhMedidas: !!(c.inhabilidades?.inhMedidas),
+        inhRespParental: !!(c.inhabilidades?.inhRespParental), inhTutela: !!(c.inhabilidades?.inhTutela), estadoCaso: c.estadoCaso || "Abierto",
+        expedienteReferencia: c.expedienteReferencia || "", lugarInstitucionalizacion: c.lugarInstitucionalizacion || "", contactoInstitucionalizacion: c.contactoInstitucionalizacion || "",
+        nombreCompletoNNA: c.nombreCompletoNNA || "", nacionalidadNNA: c.nacionalidadNNA || "", identidadCulturalNNA: c.identidadCulturalNNA || "",
+        opinionNNA: c.opinionNNA || "", nombreMadre: c.nombreMadre || "", nombrePadre: c.nombrePadre || "", vinculoFamiliar: c.vinculoFamiliar || "",
+        obsFamilia: c.obsFamilia || "", medidasAplicadas: c.medidasAplicadas || {}, obsMedida: c.obsMedida || "", asistenciaLetrada: c.asistenciaLetrada || "",
+        actoInfractor: c.actoInfractor || "", infoFamilia: c.infoFamilia || ""
+      };
+      document.querySelectorAll('.reg-card .badge').forEach(el => el.style.display = 'block');
       showTab('registro');
     };
 
@@ -734,18 +938,14 @@
       const s = await get(child(ref(rtdb1),"casos/"+id));
       if(!s.exists()) return;
       casoActual = {id, ...(s.val()||{})};
-
       const historialHTML = (casoActual.historial||[]).map(h=>`<p><span class='status-en'>${h.fecha}</span>: ${h.accion}</p>`).join("") || "<p>Sin historial</p>";
       const seguimientosHTML = (casoActual.seguimientos||[]).map(sg=>`<p><span class='status-en'>${sg.fecha}</span>: ${sg.texto}</p>`).join("") || "<p>Sin seguimiento</p>";
       const expHtml = casoActual.expedienteReferencia ? `<a class="link" href="#" onclick="verExpediente('${casoActual.expedienteReferencia}')">${getExpDisplay(casoActual.expedienteReferencia)}</a>` : "-";
-
       const reqList = casoActual.requisitos ? Object.entries(casoActual.requisitos).filter(([k,v])=>v).map(([k])=>k.replace('req','').replace(/[A-Z]/g,' $&')).join(', ') : '-';
       const inhList = casoActual.inhabilidades ? Object.entries(casoActual.inhabilidades).filter(([k,v])=>v).map(([k])=>k.replace('inh','').replace(/[A-Z]/g,' $&')).join(', ') : '-';
-
       const edadN = calcEdad(casoActual.fechaNacimientoNNA);
       const edadF = calcEdad(casoActual.faFechaNac);
       const diff = (edadN!=null && edadF!=null) ? (edadF-edadN) : null;
-
       modalCasoBody.innerHTML = `
         <div class='section'>
           <h4>Datos del NNA</h4>
@@ -770,7 +970,6 @@
             <div><b>Contacto institucionalización:</b> ${casoActual.contactoInstitucionalizacion||""}</div>
           </div>
         </div>
-
         <div class='section'>
           <h4>Medida y SAF</h4>
           <div class="form-row">
@@ -801,20 +1000,17 @@
           <div style="margin-top:6px"><b>Plan de intervención:</b><br>${(casoActual.planIntervencion||"").replace(/\n/g,"<br>")}</div>
           ${diff!=null?`<div style="margin-top:6px"><b>Diferencia de edad referente/NNA:</b> ${diff} años ${diff>=15?'<span class="badge badge-ok">OK</span>':'<span class="badge badge-danger">Insuficiente</span>'}</div>`:""}
         </div>
-
         <div class='section'>
           <h4>RUFAAFA</h4>
           <p><b>Requisitos cumplidos:</b> ${reqList}</p>
           <p><b>Inhabilidades (negativas):</b> ${inhList}</p>
         </div>
-
         <div class='section'>
           <h4>Situación</h4>
           <p>${(casoActual.situacionVulneracion||"").replace(/\n/g,"<br>")}</p>
           <h4 style="margin-top:8px">Observaciones de derechos</h4>
           <p>${(casoActual.obsDerechos||"").replace(/\n/g,"<br>")}</p>
         </div>
-
         <div class='section'>
           <h4>Seguimientos</h4>
           ${seguimientosHTML}
@@ -826,7 +1022,6 @@
             <div><b>Fecha:</b> ${casoActual.fechaEgreso||"-"}</div>
           </div>
         </div>
-
         <div class='section'>
           <h4>Historial de cambios</h4>
           ${historialHTML}
@@ -848,12 +1043,11 @@
 
     // ===== Modal Expediente =====
     window.verExpediente = async (numeroCausa)=>{
-      const causaDoc = Object.values(causasIndex).find(c => c.numero === numeroCausa);
+      const causaDoc = Object.values(causasIndex).find(c => c.numCausa === numeroCausa);
       if(!causaDoc) {
         alert("Detalles del expediente no encontrados.");
         return;
       }
-
       const seguimientoDocs = await getDocs(collection(db2, "causas", causaDoc.firebaseId, "seguimiento"));
       const segs = seguimientoDocs.docs
         .map(doc => {
@@ -861,11 +1055,10 @@
           return `<p><span style="color:#004085;font-weight:bold">${s.fecha}:</span> ${s.texto}</p>`;
         })
         .join("") || "<p style='color:gray'>Sin seguimientos registrados</p>";
-
       $('modalExpedienteBody').innerHTML = `
         <div class='section'>
           <h4>Datos del Expediente</h4>
-          <p><b>Número de Causa:</b> ${causaDoc.numero||""}</p>
+          <p><b>Número de Causa:</b> ${causaDoc.numCausa||""}</p>
           <p><b>Carátula:</b> ${causaDoc.caratula||""}</p>
           <p><b>Fecha de Registro:</b> ${causaDoc.fecha||""}</p>
           <p><b>Estado:</b> ${causaDoc.estado||""}</p>
@@ -877,9 +1070,7 @@
         </div>`;
       $('modalExpediente').classList.add("open");
     };
-
     window.cerrarModalExpediente = ()=>$('modalExpediente').classList.remove("open");
-
     // ===== Utilidades de impresión/exportación =====
     window.imprimirSeccion = (id)=>{
       const el = document.getElementById(id);
@@ -900,7 +1091,6 @@
       a.click();
       URL.revokeObjectURL(url);
     };
-
     // ===== Tabs =====
     window.showTab = (id, e)=>{
       document.querySelectorAll(".tab-content").forEach(x=>x.classList.remove("active"));
